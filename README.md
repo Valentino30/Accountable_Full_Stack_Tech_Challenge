@@ -62,6 +62,15 @@ Restart the container:
 docker start mongo
 ```
 
+### Seed the database
+
+Import initial event data from the CSV file:
+
+```bash
+cd backend
+npm run seed
+```
+
 ### Run the server
 
 From the `backend/` folder:
