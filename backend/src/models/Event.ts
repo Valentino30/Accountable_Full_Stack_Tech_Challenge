@@ -1,4 +1,9 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
+
+export interface IReservation {
+  userId: Types.ObjectId;
+  spots: number;
+}
 
 export interface IEvent extends Document {
   id_odsp: string;
@@ -9,8 +14,16 @@ export interface IEvent extends Document {
   league: string;
   price: number;
   availableSeats: number;
-  reservedSpots: number;
+  reservations: IReservation[];
 }
+
+export const ReservationSchema = new Schema<IReservation>(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    spots: { type: Number, required: true, min: 1 },
+  },
+  { _id: false }
+);
 
 const EventSchema = new Schema<IEvent>(
   {
@@ -22,7 +35,7 @@ const EventSchema = new Schema<IEvent>(
     league: { type: String, required: true },
     price: { type: Number, required: true },
     availableSeats: { type: Number, required: true },
-    reservedSpots: { type: Number, default: 0 },
+    reservations: { type: [ReservationSchema], default: [] },
   },
   { timestamps: true }
 );
