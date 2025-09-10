@@ -9,8 +9,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-// routes
 app.use("/api/events", eventRoutes);
 
 const PORT = process.env.PORT || 5000;
