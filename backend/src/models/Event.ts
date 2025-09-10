@@ -9,6 +9,7 @@ export interface IEvent extends Document {
   league: string;
   price: number;
   availableSeats: number;
+  reservedSpots: number;
 }
 
 const EventSchema = new Schema<IEvent>(
@@ -21,6 +22,7 @@ const EventSchema = new Schema<IEvent>(
     league: { type: String, required: true },
     price: { type: Number, required: true },
     availableSeats: { type: Number, required: true },
+    reservedSpots: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -40,13 +40,36 @@ export const reserveEvent = async (req: Request, res: Response) => {
     const { spots } = req.body;
     if (!spots || spots < 1) return res.status(400).json({ error: "Invalid number of spots" });
 
-    if (event.availableSeats < spots) return res.status(400).json({ error: "Not enough available seats" });
+    // Total spots reserved across all events for the “current user”
+    const allEvents = await Event.find({});
+    const totalReserved = allEvents.reduce((sum, e) => sum + (e.reservedSpots || 0), 0);
 
+    if (totalReserved + spots > 5) {
+      return res.status(400).json({ error: "Cannot reserve more than 5 spots across all events" });
+    }
+
+    // Check per-event limit (max 2)
+    if ((event.reservedSpots || 0) + spots > 2) {
+      return res.status(400).json({ error: "Cannot reserve more than 2 spots for this event" });
+    }
+
+    // Check available seats
+    if (event.availableSeats < spots) {
+      return res.status(400).json({ error: "Not enough available seats" });
+    }
+
+    // Reserve the spots
+    event.reservedSpots = (event.reservedSpots || 0) + spots;
     event.availableSeats -= spots;
     await event.save();
 
-    res.json({ message: "Reservation successful", remainingSeats: event.availableSeats });
+    res.json({
+      message: "Reservation successful",
+      reservedSpots: event.reservedSpots,
+      remainingSeats: event.availableSeats,
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
