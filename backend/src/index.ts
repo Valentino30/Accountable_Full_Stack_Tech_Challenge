@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db";
+import userRoutes from "./routes/userRoutes";
 import eventRoutes from "./routes/eventRoutes";
 
 dotenv.config();
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 // Routes
+app.use("/api/users", userRoutes);
 app.use("/api/events", eventRoutes);
 
 // Validate required environment variables
@@ -33,6 +35,11 @@ if (!PORT_STR) {
 }
 
 const PORT = parseInt(PORT_STR, 10);
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("❌ JWT_SECRET is required in environment variables");
+}
+export const JWT_SECRET = process.env.JWT_SECRET;
 
 // Start server
 const start = async () => {
