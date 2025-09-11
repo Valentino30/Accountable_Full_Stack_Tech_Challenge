@@ -1,13 +1,10 @@
-import jwt from "jsonwebtoken";
-import { Request, Response } from "express";
-import User from "../models/User";
+import { Response } from "express";
 import Event from "../models/Event";
-import { sendEmail } from "../utils/emailService";
 import { Types } from "mongoose";
-import { JWT_SECRET } from "..";
+import { AuthRequest } from "../middleware/auth";
 
 // Get all events with optional filters
-export const getEvents = async (req: Request, res: Response) => {
+export const getEvents = async (req: AuthRequest, res: Response) => {
   try {
     const { country, date, homeTeam, awayTeam, league } = req.query;
     const filter: any = {};
@@ -26,7 +23,7 @@ export const getEvents = async (req: Request, res: Response) => {
 };
 
 // Get single event by MongoDB _id
-export const getEventById = async (req: Request, res: Response) => {
+export const getEventById = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -45,75 +42,52 @@ export const getEventById = async (req: Request, res: Response) => {
 };
 
 // Reserve spots for an event
-export const reserveEvent = async (req: Request, res: Response) => {
+export const reserveEvent = async (req: AuthRequest, res: Response) => {
   try {
-    const { spots } = req.body;
-    if (!spots || spots < 1) return res.status(400).json({ error: "Invalid number of spots" });
+    const { spotsReserved } = req.body;
 
-    // Authenticate user
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) return res.status(401).json({ error: "Unauthorized" });
+    // Validate request for number of reservations requested (should be 1 or 2)
+    if (!spotsReserved || spotsReserved < 1) return res.status(400).json({ error: "Invalid number of reservations" });
+    if (spotsReserved > 2) return res.status(400).json({ error: "Cannot reserve more than 2 reservations per event" });
 
-    const token = authHeader.split(" ")[1];
-    let decoded: any;
-    try {
-      decoded = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
-      return res.status(401).json({ error: "Invalid or expired token" });
-    }
+    // Validate event ID format
+    const eventId = req.params.id;
+    if (!Types.ObjectId.isValid(eventId)) return res.status(400).json({ error: "Invalid event ID" });
 
-    if (!Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: "Invalid event ID" });
-    }
-
-    const userId = new Types.ObjectId(decoded.id);
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ error: "User not found" });
-
-    const event = await Event.findById(req.params.id);
+    // Fetch target event
+    const event = await Event.findById(eventId);
     if (!event) return res.status(404).json({ error: "Event not found" });
 
-    // Total spots reserved by this user across all events
-    const allEvents = await Event.find({});
-    const totalReservedByUser = allEvents.reduce((sum, e) => {
-      const userReservation = e.reservations.find((r) => r.userId.equals(userId));
-      return sum + (userReservation?.spots || 0);
-    }, 0);
+    const userId = new Types.ObjectId(req.userId!);
+    const previousReservations = event.reservations.find((r) => r.userId.equals(userId));
+    // Validate request for total number of reservations requested per event (should not exceed 2)
+    if ((previousReservations?.spotsReserved || 0) + spotsReserved > 2)
+      return res.status(400).json({ error: "Cannot reserve more than 2 spots for this event" });
+    // Validate request for number of available seats left for the event
+    if (event.availableSeats < spotsReserved) return res.status(400).json({ error: "Not enough available seats" });
 
-    if (totalReservedByUser + spots > 5)
+    // Validate total reservations across all events (should not exceed 5)
+    const reservedSpotsAcrossEvents = await Event.aggregate([
+      { $unwind: "$reservations" },
+      { $match: { "reservations.userId": userId } },
+      { $group: { _id: null, total: { $sum: "$reservations.spots" } } },
+    ]);
+    const totalReserved = reservedSpotsAcrossEvents[0]?.total || 0;
+    if (totalReserved + spotsReserved > 5)
       return res.status(400).json({ error: "Cannot reserve more than 5 spots across all events" });
 
-    // Per-event limit (max 2)
-    const currentEventUserReservation = event.reservations.find((r) => r.userId.equals(userId));
-    if ((currentEventUserReservation?.spots || 0) + spots > 2)
-      return res.status(400).json({ error: "Cannot reserve more than 2 spots for this event" });
-
-    // Check available seats
-    if (event.availableSeats < spots) return res.status(400).json({ error: "Not enough available seats" });
-
-    // Update reservations
-    if (currentEventUserReservation) {
-      currentEventUserReservation.spots += spots;
+    // Update reservation & available seats
+    if (previousReservations) {
+      previousReservations.spotsReserved += spotsReserved;
     } else {
-      event.reservations.push({ userId, spots });
+      event.reservations.push({ userId, spotsReserved });
     }
-    event.availableSeats -= spots;
+    event.availableSeats -= spotsReserved;
     await event.save();
-
-    // Send confirmation email (log error but don’t block reservation)
-    try {
-      await sendEmail(
-        user.email,
-        "Reservation Confirmed",
-        `Your reservation for ${event.homeTeam} vs ${event.awayTeam} on ${event.date.toDateString()} is confirmed.`
-      );
-    } catch (emailErr) {
-      console.error("Failed to send confirmation email:", emailErr);
-    }
 
     res.json({
       message: "Reservation successful",
-      reservedSpots: currentEventUserReservation?.spots || spots,
+      reservedSpots: previousReservations?.spotsReserved || spotsReserved,
       remainingSeats: event.availableSeats,
     });
   } catch (err: any) {

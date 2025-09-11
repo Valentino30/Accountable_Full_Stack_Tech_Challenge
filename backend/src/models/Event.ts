@@ -2,7 +2,7 @@ import { Schema, model, Document, Types } from "mongoose";
 
 export interface IReservation {
   userId: Types.ObjectId;
-  spots: number;
+  spotsReserved: number;
 }
 
 export interface IEvent extends Document {
@@ -20,7 +20,7 @@ export interface IEvent extends Document {
 export const ReservationSchema = new Schema<IReservation>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    spots: { type: Number, required: true, min: 1 },
+    spotsReserved: { type: Number, required: true, min: 1 },
   },
   { _id: false }
 );
