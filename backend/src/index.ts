@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db";
 import userRoutes from "./routes/userRoutes";
 import eventRoutes from "./routes/eventRoutes";
+import { startCronJobs } from "./jobs/cron";
 
 dotenv.config();
 
@@ -46,6 +47,9 @@ const start = async () => {
   try {
     await connectDB(MONGO_URI);
     console.log(`✅ Connected to MongoDB`);
+    
+    // run scheduled jobs in background
+    startCronJobs();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://127.0.0.1:${PORT}`);
