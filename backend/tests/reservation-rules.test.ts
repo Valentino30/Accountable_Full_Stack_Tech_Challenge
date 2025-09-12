@@ -1,42 +1,18 @@
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import request from "supertest";
 import express from "express";
-
 import { createTestUser, createTestEvent } from "../src/utils/factories";
-import { reserveEvent } from "../src/controllers/eventController";
+import { setupTestDB, dropTestDB, teardownTestDB } from "./utils/mongoTestUtils";
+import { createTestApp } from "./utils/testApp";
 
-let mongoServer: MongoMemoryServer;
 let app: express.Express;
 
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  await mongoose.connect(mongoServer.getUri(), { dbName: "test" });
-
-  app = express();
-  app.use(express.json());
-
-  // Middleware to simulate authentication
-  app.use((req, _res, next) => {
-    const testUserId = (req.headers["x-test-user-id"] as string) || undefined;
-    if (testUserId) {
-      (req as any).userId = testUserId;
-    }
-    next();
-  });
-
-  // Route for reserving event spots
-  app.post("/api/events/:id/reserve", reserveEvent);
+  await setupTestDB();
+  app = createTestApp();
 });
 
-afterAll(async () => {
-  await mongoose.disconnect();
-  if (mongoServer) await mongoServer.stop();
-});
-
-beforeEach(async () => {
-  await mongoose.connection.dropDatabase();
-});
+afterAll(teardownTestDB);
+beforeEach(dropTestDB);
 
 describe("Reservation rules", () => {
   test("Max 2 spots per user per event", async () => {

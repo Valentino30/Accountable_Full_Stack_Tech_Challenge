@@ -1,35 +1,18 @@
-// tests/event-api.test.ts
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import express from "express";
 import request from "supertest";
-
-import { getEvents, getEventById } from "../src/controllers/eventController";
+import express from "express";
 import { createTestEvent } from "../src/utils/factories";
+import { setupTestDB, dropTestDB, teardownTestDB } from "./utils/mongoTestUtils";
+import { createTestApp } from "./utils/testApp";
 
-let mongoServer: MongoMemoryServer;
 let app: express.Express;
 
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const uri = mongoServer.getUri();
-  await mongoose.connect(uri, { dbName: "test" });
-
-  app = express();
-  app.use(express.json());
-
-  app.get("/events/:id", getEventById);
-  app.get("/events", getEvents);
+  await setupTestDB();
+  app = createTestApp();
 });
 
-afterAll(async () => {
-  await mongoose.disconnect();
-  if (mongoServer) await mongoServer.stop();
-});
-
-beforeEach(async () => {
-  await mongoose.connection.dropDatabase();
-});
+afterAll(teardownTestDB);
+beforeEach(dropTestDB);
 
 describe("Events API", () => {
   test("GET /events/:id returns the event", async () => {
