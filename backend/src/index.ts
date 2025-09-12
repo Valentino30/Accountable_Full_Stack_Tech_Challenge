@@ -5,39 +5,41 @@ import app from "./app";
 
 dotenv.config({ quiet: true });
 
-// Validate MONGO_URI
-const MONGO_URI = process.env.MONGO_URI;
-if (!MONGO_URI) {
-  throw new Error("❌ MONGO_URI is required in environment variables");
-}
-// Validate PORT
-const PORT_STR = process.env.PORT;
-if (!PORT_STR) {
-  throw new Error("❌ PORT is required in environment variables");
-}
-const PORT = parseInt(PORT_STR, 10);
+// ---------------------
+// ENV VALIDATION
+// ---------------------
+const requiredEnvs = ["MONGO_URI", "PORT", "JWT_SECRET"];
+requiredEnvs.forEach((key) => {
+  if (!process.env[key]) throw new Error(`❌ ${key} is required in environment variables`);
+});
 
-// Validate JWT_SECRET
-if (!process.env.JWT_SECRET) {
-  throw new Error("❌ JWT_SECRET is required in environment variables");
-}
-export const JWT_SECRET = process.env.JWT_SECRET;
+export const JWT_SECRET = process.env.JWT_SECRET as string;
+const PORT = parseInt(process.env.PORT as string, 10);
+const MONGO_URI = process.env.MONGO_URI as string;
+const HOST = process.env.HOST || "0.0.0.0";
+const NODE_ENV = process.env.NODE_ENV || "development";
 
-// Start server
-const start = async () => {
+// ---------------------
+// START SERVER
+// ---------------------
+const startServer = async () => {
   try {
+    // Connect to MongoDB
     await connectDB(MONGO_URI);
-    console.log(`✅ Connected to MongoDB`);
-    // run scheduled jobs in background
-    startCronJobs();
+    console.log("✅ Connected to MongoDB");
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://127.0.0.1:${PORT}`);
+    // Start cron jobs
+    startCronJobs();
+    console.log("🕒 Cron jobs started");
+
+    // Start server
+    app.listen(PORT, HOST, () => {
+      console.log(`🚀 Server running on http://${HOST}:${PORT} [${NODE_ENV}]`);
     });
-  } catch (error) {
-    console.error("❌ Server failed to start:", error);
+  } catch (err) {
+    console.error("❌ Server failed to start:", err);
     process.exit(1);
   }
 };
 
-start();
+startServer();
