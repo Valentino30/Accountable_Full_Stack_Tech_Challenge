@@ -1,42 +1,23 @@
-import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db";
-import userRoutes from "./routes/userRoutes";
-import eventRoutes from "./routes/eventRoutes";
 import { startCronJobs } from "./jobs/cron";
+import app from "./app";
 
 dotenv.config();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// Dev-only request logging
-if (process.env.NODE_ENV !== "production") {
-  app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-  });
-}
-
-// Routes
-app.use("/api/users", userRoutes);
-app.use("/api/events", eventRoutes);
-
-// Validate required environment variables
+// Validate MONGO_URI
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
   throw new Error("❌ MONGO_URI is required in environment variables");
 }
-
+// Validate PORT
 const PORT_STR = process.env.PORT;
 if (!PORT_STR) {
   throw new Error("❌ PORT is required in environment variables");
 }
-
 const PORT = parseInt(PORT_STR, 10);
 
+// Validate JWT_SECRET
 if (!process.env.JWT_SECRET) {
   throw new Error("❌ JWT_SECRET is required in environment variables");
 }
@@ -47,7 +28,6 @@ const start = async () => {
   try {
     await connectDB(MONGO_URI);
     console.log(`✅ Connected to MongoDB`);
-    
     // run scheduled jobs in background
     startCronJobs();
 

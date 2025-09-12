@@ -4,21 +4,28 @@ import { Types } from "mongoose";
 import { AuthRequest } from "../middleware/auth";
 
 // Get all events with optional filters
+// Get all events with optional filters
 export const getEvents = async (req: AuthRequest, res: Response) => {
   try {
     const { country, date, homeTeam, awayTeam, league } = req.query;
-    const filter: any = {};
+    const filter: Record<string, any> = {};
 
     if (country) filter.country = country;
-    if (date) filter.date = { $eq: new Date(date as string) };
+    if (date) {
+      const start = new Date(date as string);
+      const end = new Date(start);
+      end.setUTCDate(start.getUTCDate() + 1);
+      filter.date = { $gte: start, $lt: end };
+    }
     if (homeTeam) filter.homeTeam = homeTeam;
     if (awayTeam) filter.awayTeam = awayTeam;
     if (league) filter.league = league;
 
-    const events = await Event.find(filter);
-    res.json(events);
+    const events = await Event.find(filter).lean();
+    return res.json(events);
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error("GetEvents Error:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -31,13 +38,15 @@ export const getEventById = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: "Invalid event ID" });
     }
 
-    const event = await Event.findById(id);
-    if (!event) return res.status(404).json({ error: "Event not found" });
+    const event = await Event.findById(id).lean();
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
 
-    res.json(event);
+    return res.json(event);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    console.error("GetEventById Error:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -70,7 +79,7 @@ export const reserveEvent = async (req: AuthRequest, res: Response) => {
     const reservedSpotsAcrossEvents = await Event.aggregate([
       { $unwind: "$reservations" },
       { $match: { "reservations.userId": userId } },
-      { $group: { _id: null, total: { $sum: "$reservations.spots" } } },
+      { $group: { _id: null, total: { $sum: "$reservations.spotsReserved" } } },
     ]);
     const totalReserved = reservedSpotsAcrossEvents[0]?.total || 0;
     if (totalReserved + spotsReserved > 5)
