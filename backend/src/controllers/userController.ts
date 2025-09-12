@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import zxcvbn from "zxcvbn";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
@@ -8,6 +9,15 @@ export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: "Email and password required" });
+
+    // Check password strength
+    const strength = zxcvbn(password);
+    if (strength.score < 3) {
+      return res.status(400).json({
+        error: "Password is too weak",
+        feedback: strength.feedback,
+      });
+    }
 
     const hashed = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hashed });
