@@ -3,7 +3,7 @@ import { connectDB } from "./config/db";
 import { startCronJobs } from "./jobs/cron";
 import app from "./app";
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 // Validate MONGO_URI
 const MONGO_URI = process.env.MONGO_URI;

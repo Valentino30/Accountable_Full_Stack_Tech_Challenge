@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import Event from "../models/Event";
 import { connectDB } from "../config/db";
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) throw new Error("MONGO_URI is required");
