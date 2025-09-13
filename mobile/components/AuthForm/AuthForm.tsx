@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
-import { View, TextInput, Text, Button, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, TextInput, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./styles";
+import Button from "../Button";
 
 interface AuthFormProps {
   title: string;
@@ -24,7 +25,7 @@ export default function AuthForm({ title, onSubmit, isPending, error }: AuthForm
 
   const handleFocus = () => {
     setInputTouched(true);
-    setLocalError(null); // clear local error when focusing
+    setLocalError(null);
   };
 
   const handleSubmit = async () => {
@@ -35,7 +36,6 @@ export default function AuthForm({ title, onSubmit, isPending, error }: AuthForm
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
 
-    // Local validation
     if (!trimmedEmail || !trimmedPassword) {
       setLocalError("Please enter both email and password.");
       return;
