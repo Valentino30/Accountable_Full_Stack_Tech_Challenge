@@ -1,5 +1,5 @@
 import express from "express";
-import { getEvents, getEventById, reserveEvent } from "../../src/controllers/eventController";
+import { getEvents, getEventById, reserveEvent, cancelReservation } from "../../src/controllers/eventController";
 
 export function createTestApp() {
   const app = express();
@@ -15,9 +15,10 @@ export function createTestApp() {
   });
 
   // routes
-  app.get("/events/:id", getEventById);
   app.get("/events", getEvents);
+  app.get("/events/:id", getEventById);
   app.post("/api/events/:id/reserve", reserveEvent);
+  app.delete("/api/events/:id/reserve", cancelReservation);
 
   return app;
 }
