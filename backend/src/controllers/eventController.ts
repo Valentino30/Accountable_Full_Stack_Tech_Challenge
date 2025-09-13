@@ -104,3 +104,37 @@ export const reserveEvent = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ error: err.message || "Server error" });
   }
 };
+
+// Cancel a reservation for an event
+export const cancelReservation = async (req: AuthRequest, res: Response) => {
+  try {
+    const eventId = req.params.id;
+    if (!Types.ObjectId.isValid(eventId)) return res.status(400).json({ error: "Invalid event ID" });
+
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ error: "Event not found" });
+
+    const userId = new Types.ObjectId(req.userId!);
+    const reservationIndex = event.reservations.findIndex((r) => r.userId.equals(userId));
+
+    if (reservationIndex === -1) {
+      return res.status(400).json({ error: "No reservation found for this user" });
+    }
+
+    const canceledSpots = event.reservations[reservationIndex].spotsReserved;
+    // Remove the reservation
+    event.reservations.splice(reservationIndex, 1);
+    event.availableSeats += canceledSpots;
+
+    await event.save();
+
+    res.json({
+      message: "Reservation canceled successfully",
+      freedSpots: canceledSpots,
+      availableSeats: event.availableSeats,
+    });
+  } catch (err: any) {
+    console.error("Cancel Reservation Error:", err);
+    res.status(500).json({ error: err.message || "Server error" });
+  }
+};
