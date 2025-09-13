@@ -1,7 +1,7 @@
-import { Event } from "./event";
+import { Match } from "./match";
 
 export interface ReservationResponse {
   success: boolean;
   message: string;
-  reservedEvent?: Event;
+  reservedMatch?: Match;
 }
