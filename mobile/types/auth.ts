@@ -22,6 +22,7 @@ export interface RefreshTokenResponse {
 
 export interface AuthContextType {
   token: string | null;
+  userId: string | null; // ← add userId
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;

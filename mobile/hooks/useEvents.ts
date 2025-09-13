@@ -1,4 +1,3 @@
-// src/hooks/useEvents.ts
 import { useQuery, useMutation, useQueryClient, UseMutationResult, UseQueryResult } from "@tanstack/react-query";
 import apiClient from "../api/apiClient";
 import { ReservationResponse } from "../types/reservation";
@@ -18,14 +17,16 @@ export const useEvents = (token: string | null, search = ""): UseQueryResult<Eve
   });
 };
 
-export const useReserveEvent = (token: string | null): UseMutationResult<ReservationResponse, ApiError, string> => {
+export const useReserveEvent = (
+  token: string | null
+): UseMutationResult<ReservationResponse, ApiError, { eventId: string; spotsReserved: number }> => {
   const queryClient = useQueryClient();
 
-  return useMutation<ReservationResponse, ApiError, string>({
-    mutationFn: async (eventId: string) => {
+  return useMutation<ReservationResponse, ApiError, { eventId: string; spotsReserved: number }>({
+    mutationFn: async ({ eventId, spotsReserved }) => {
       const res = await apiClient.post<ReservationResponse>(
         `/events/${eventId}/reserve`,
-        {},
+        { spotsReserved },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data;

@@ -1,53 +1,59 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import styles from "./styles";
 import { Event } from "../../types/event";
+import { generateTeamLogo } from "../../utils/generateTeamLogo";
+import { useAuth } from "../../context/AuthContext";
 
 interface EventCardProps {
   event: Event;
-  onReserve: (eventId: string) => void;
+  onReserve: (eventId: string, spots: number) => void;
   isReserving: boolean;
 }
 
-// Generate a simple colored logo with initials
-const generateTeamLogo = (teamName: string) => {
-  const colors = ["#FF6B6B", "#4ECDC4", "#556270", "#C7F464", "#FF6B6B"];
-  const color = colors[teamName.charCodeAt(0) % colors.length];
-  const initials = teamName
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
+const EventCard = ({ event, onReserve, isReserving }: EventCardProps) => {
+  const { userId } = useAuth();
 
-  return (
-    <View
-      style={{
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: color,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text style={{ color: "#fff", fontWeight: "bold" }}>{initials}</Text>
+  // Get how many spots the current user has reserved for this event
+  const userReservedSpots = event.reservations?.find((r) => r.userId === userId)?.spotsReserved || 0;
+
+  const [spots, setSpots] = useState<number>(1);
+  const [maxSelectable, setMaxSelectable] = useState<number>(2);
+
+  useEffect(() => {
+    // Max spots selectable is min(2 per event minus already reserved, available seats)
+    const max = Math.min(2 - userReservedSpots, event.availableSeats);
+    setMaxSelectable(max);
+    if (spots > max) setSpots(max > 0 ? max : 1);
+  }, [userReservedSpots, event.availableSeats]);
+
+  const isReserved = userReservedSpots > 0 || event.availableSeats <= 0;
+
+  const homeLogo = generateTeamLogo(event.homeTeam);
+  const awayLogo = generateTeamLogo(event.awayTeam);
+
+  const renderLogo = (initials: string, color: string) => (
+    <View style={[styles.logo, { backgroundColor: color }]}>
+      <Text style={styles.logoText}>{initials}</Text>
     </View>
   );
-};
 
-const EventCard: React.FC<EventCardProps> = ({ event, onReserve, isReserving }) => {
-  const isReserved = event.reservedByUser || event.availableSeats <= 0;
+  const handleReserve = () => {
+    // Optimistic UI: immediately update reserved spots
+    onReserve(event._id, spots);
+  };
 
   return (
     <View style={[styles.card, isReserved && styles.cardDisabled]}>
       {isReserved && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>Reserved</Text>
+          <Text style={styles.badgeText}>{userReservedSpots > 0 ? `Reserved ${userReservedSpots}` : "Sold Out"}</Text>
         </View>
       )}
 
       <View style={styles.teamsContainer}>
         <View style={styles.teamContainer}>
-          {generateTeamLogo(event.homeTeam)}
+          {renderLogo(homeLogo.initials, homeLogo.color)}
           <Text style={styles.team} numberOfLines={1} ellipsizeMode="tail">
             {event.homeTeam}
           </Text>
@@ -58,7 +64,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onReserve, isReserving }) 
         </View>
 
         <View style={styles.teamContainer}>
-          {generateTeamLogo(event.awayTeam)}
+          {renderLogo(awayLogo.initials, awayLogo.color)}
           <Text style={styles.team} numberOfLines={1} ellipsizeMode="tail">
             {event.awayTeam}
           </Text>
@@ -70,15 +76,31 @@ const EventCard: React.FC<EventCardProps> = ({ event, onReserve, isReserving }) 
       </Text>
 
       <Text style={[styles.spots, event.availableSeats === 0 && styles.spotsFull]}>
-        Spots Available: {event.availableSeats}
+        {event.availableSeats} spots available
       </Text>
 
+      {/* Seat selector */}
+      <View style={styles.seatSelectorContainer}>
+        {[1, 2].map((n) => (
+          <TouchableOpacity
+            key={n}
+            onPress={() => setSpots(n)}
+            style={[styles.seatButton, spots === n && styles.seatButtonActive]}
+            disabled={isReserving || n > maxSelectable || isReserved}
+          >
+            <Text style={[styles.seatButtonText, spots === n && styles.seatButtonTextActive]}>
+              {n} {n === 1 ? "Spot" : "Spots"}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <TouchableOpacity
-        style={[styles.button, isReserved && styles.buttonDisabled]}
-        onPress={() => onReserve(event._id)}
-        disabled={isReserved || isReserving}
+        style={[styles.button, (isReserving || maxSelectable === 0 || isReserved) && styles.buttonDisabled]}
+        onPress={handleReserve}
+        disabled={isReserving || maxSelectable === 0 || isReserved}
       >
-        <Text style={styles.buttonText}>{event.reservedByUser ? "Reserved" : "Reserve"}</Text>
+        <Text style={styles.buttonText}>{userReservedSpots > 0 ? `Reserved ${userReservedSpots}` : "Reserve"}</Text>
       </TouchableOpacity>
     </View>
   );

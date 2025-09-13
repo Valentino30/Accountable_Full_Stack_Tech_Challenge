@@ -1,17 +1,17 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { View, TextInput, FlatList } from "react-native";
 import { useEvents, useReserveEvent } from "../../hooks/useEvents";
 import EventCard from "../../components/EventCard";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./styles";
 
-const EventListScreen: React.FC = () => {
+const EventListScreen = () => {
   const { token } = useAuth();
   const [search, setSearch] = useState("");
   const { data: events = [], refetch, isFetching } = useEvents(token, search);
   const reserveMutation = useReserveEvent(token);
 
-  const handleReserve = (eventId: string) => reserveMutation.mutate(eventId);
+  const handleReserve = (eventId: string, spots: number) => reserveMutation.mutate({ eventId, spotsReserved: spots });
 
   return (
     <View style={styles.container}>

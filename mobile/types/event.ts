@@ -8,6 +8,11 @@ export interface Event {
   league: string;
   price: number;
   availableSeats: number;
-  reservations: Array<{ userId: string }>;
+  reservations: Array<{ userId: string; spotsReserved: number }>;
   reservedByUser?: boolean;
+}
+
+export interface TeamLogoParams {
+  initials: string;
+  color: string;
 }

@@ -43,9 +43,14 @@ export default StyleSheet.create({
   logo: {
     width: 50,
     height: 50,
-    marginBottom: 4,
     borderRadius: 25,
-    backgroundColor: "#eee", // placeholder for logos
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  logoText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
   team: {
     fontSize: 14,
@@ -79,6 +84,34 @@ export default StyleSheet.create({
   spotsFull: {
     color: "#e53935",
   },
+
+  // 🔹 Neutral tab-style seat selector
+  seatSelectorContainer: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: "#aaa",
+    borderRadius: 6,
+    overflow: "hidden",
+    marginBottom: 8,
+  },
+  seatButton: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  seatButtonActive: {
+    backgroundColor: "#555", // dark gray highlight
+  },
+  seatButtonText: {
+    color: "#555",
+    fontWeight: "600",
+  },
+  seatButtonTextActive: {
+    color: "#fff",
+  },
+
+  // 🔹 Main action button (stays blue)
   button: {
     backgroundColor: "#1a73e8",
     borderRadius: 6,
