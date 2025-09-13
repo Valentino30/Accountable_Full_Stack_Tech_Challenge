@@ -1,11 +1,13 @@
 export interface Event {
   _id: string;
-  name: string;
-  teamA: string;
-  teamB: string;
-  country: string;
+  id_odsp: string;
   date: string;
-  spotsAvailable: number;
-  reservedByUser: boolean;
-  userReservedCount?: number;
+  country: string;
+  homeTeam: string;
+  awayTeam: string;
+  league: string;
+  price: number;
+  availableSeats: number;
+  reservations: Array<{ userId: string }>;
+  reservedByUser?: boolean;
 }
