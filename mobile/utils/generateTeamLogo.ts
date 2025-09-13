@@ -1,4 +1,4 @@
-import { TeamLogoParams } from "../types/event";
+import { TeamLogoParams } from "../types/match";
 
 export const generateTeamLogo = (teamName: string): TeamLogoParams => {
   const colors = ["#FF6B6B", "#4ECDC4", "#556270", "#C7F464", "#FF6B6B"];
