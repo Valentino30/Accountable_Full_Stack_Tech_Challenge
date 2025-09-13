@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import eventRoutes from "./routes/eventRoutes";
 
@@ -16,6 +17,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 // Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/events", eventRoutes);
 
