@@ -81,6 +81,9 @@ const styles = StyleSheet.create({
   seatSelectorContainer: {
     marginVertical: 16,
   },
+  buttonContainer: {
+    gap: 8,
+  },
   reserveButton: {
     marginTop: 16,
     borderRadius: 8,

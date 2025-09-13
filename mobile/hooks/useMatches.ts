@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient, UseMutationResult, UseQueryResul
 import { Match } from "../types/match";
 import { ApiError } from "../types/api";
 import { ReservationResponse } from "../types/reservation";
-import { getAllMatches, reserveMatch } from "../api/match";
+import { cancelReservation, getAllMatches, reserveMatch } from "../api/match";
 
 // Fetch all matches
 export const useMatches = (token: string | null, search = ""): UseQueryResult<Match[], ApiError> => {
@@ -30,6 +30,24 @@ export const useReserveMatch = (
       return reserveMatch(matchId, spotsReserved, token);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["matches"] });
+    },
+  });
+};
+
+// Cancel a reservation
+export const useCancelReservation = (
+  token: string | null
+): UseMutationResult<ReservationResponse, ApiError, { matchId: string }> => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ReservationResponse, ApiError, { matchId: string }>({
+    mutationFn: async ({ matchId }) => {
+      if (!token) throw new Error("User not authenticated");
+      return cancelReservation(matchId, token);
+    },
+    onSuccess: () => {
+      // Invalidate matches query to refresh cached data
       queryClient.invalidateQueries({ queryKey: ["matches"] });
     },
   });

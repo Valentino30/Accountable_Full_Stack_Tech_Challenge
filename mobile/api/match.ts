@@ -31,3 +31,14 @@ export const reserveMatch = async (matchId: string, spotsReserved: number, token
   );
   return res.data;
 };
+
+// Cancel a reservation for a match
+export const cancelReservation = async (matchId: string, token: string | null) => {
+  if (!token) throw new Error("User not authenticated");
+
+  const res = await apiClient.delete<ReservationResponse>(`/events/${matchId}/reserve`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return res.data;
+};
