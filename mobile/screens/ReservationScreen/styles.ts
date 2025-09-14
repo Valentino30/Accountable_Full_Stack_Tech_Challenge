@@ -90,10 +90,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: "#6200ee",
   },
+
+  // Reservation tags
   reservationTag: {
     width: "100%",
     padding: 14,
-    backgroundColor: "#ffecb3", // bright yellow
     borderRadius: 8,
     marginBottom: 16,
     justifyContent: "center",
@@ -106,9 +107,16 @@ const styles = StyleSheet.create({
   },
   reservationTagText: {
     fontWeight: "bold",
-    color: "#bf360c", // dark red
     textAlign: "center",
     fontSize: 14,
+  },
+  reservationTagGreen: {
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+  },
+  reservationTagYellow: {
+    backgroundColor: "#FFC107",
+    color: "#000",
   },
 });
 

@@ -1,7 +1,7 @@
 import { Text, ScrollView, View, Alert } from "react-native";
 import { RadioButton } from "react-native-paper";
-import { useRoute, RouteProp } from "@react-navigation/native";
-import { useState } from "react";
+import { useRoute, RouteProp, useFocusEffect } from "@react-navigation/native";
+import { useState, useMemo, useCallback } from "react";
 import MatchCard from "../../components/MatchCard";
 import Button from "../../components/Button";
 import { Match } from "../../types/match";
@@ -17,21 +17,39 @@ const ReservationScreen = () => {
   const route = useRoute<ReservationRouteProp>();
   const { userId } = useAuth();
   const { match } = route.params;
+
   const userReservation = match.reservations.find((r) => r.userId === userId);
-  const reservedSpots = userReservation?.spotsReserved || 0;
-  const [spots, setSpots] = useState<number>(reservedSpots || 1);
-  const canReserveMore = reservedSpots < MAX_SPOTS_PER_USER;
-  const availableOptions = Array.from({ length: MAX_SPOTS_PER_USER - reservedSpots }, (_, i) => i + 1);
+  const initialReservedSpots = userReservation?.spotsReserved || 0;
+
+  const [localReservedSpots, setLocalReservedSpots] = useState<number>(initialReservedSpots);
+  const [spots, setSpots] = useState<number>(1);
+  const [showWarning, setShowWarning] = useState(false);
+
+  const warningMessage = useMemo(() => {
+    if (spots + localReservedSpots > MAX_SPOTS_PER_USER) {
+      return `You can only reserve up to ${MAX_SPOTS_PER_USER} spots per match.`;
+    }
+    return null;
+  }, [spots, localReservedSpots]);
 
   const { mutate: reserveMutate, isPending: isReserving } = useReserveMatch();
   const { mutate: cancelMutate, isPending: isCancelling } = useCancelReservation();
 
   const handleReserve = () => {
-    if (!canReserveMore) return;
+    if (spots + localReservedSpots > MAX_SPOTS_PER_USER) {
+      setShowWarning(true); // show yellow label
+      return;
+    }
+
+    setShowWarning(false); // clear yellow label if valid
     reserveMutate(
       { matchId: match._id, spotsReserved: spots },
       {
-        onError: (err: any) => Alert.alert("Error", err.message || "Could not reserve"),
+        onSuccess: () => setLocalReservedSpots((prev) => prev + spots),
+        onError: (err: any) => {
+          const backendMessage = err?.response?.data?.error || err.message || "Could not reserve";
+          Alert.alert("Error", backendMessage);
+        },
       }
     );
   };
@@ -41,6 +59,9 @@ const ReservationScreen = () => {
       { matchId: match._id },
       {
         onSuccess: () => {
+          setLocalReservedSpots(0);
+          setSpots(1);
+          setShowWarning(false); // also clear warning
           Alert.alert("Success", "Reservation cancelled");
         },
         onError: (err: any) => Alert.alert("Error", err.message || "Could not cancel reservation"),
@@ -48,21 +69,37 @@ const ReservationScreen = () => {
     );
   };
 
+  const availableOptions = Array.from({ length: MAX_SPOTS_PER_USER }, (_, i) => i + 1);
+
+  // Clear yellow label when navigating away
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setShowWarning(false);
+      };
+    }, [])
+  );
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Match Card */}
       <MatchCard match={match} showReserveButton={false} />
 
-      {/* Reservation status */}
-      {reservedSpots > 0 && (
-        <View style={styles.reservationTag}>
-          <Text style={styles.reservationTagText}>
-            You have already reserved {reservedSpots} {reservedSpots === 1 ? "spot" : "spots"}.
+      {/* Always show green tag if reserved spots > 0 */}
+      {localReservedSpots > 0 && !showWarning && (
+        <View style={[styles.reservationTag, styles.reservationTagGreen]}>
+          <Text style={styles.reservationTagGreen}>
+            You have reserved {localReservedSpots} {localReservedSpots === 1 ? "spot" : "spots"}.
           </Text>
         </View>
       )}
 
-      {/* Spot Selector */}
+      {/* Show yellow warning only if user tried to exceed limit */}
+      {showWarning && (
+        <View style={[styles.reservationTag, styles.reservationTagYellow]}>
+          <Text style={styles.reservationTagYellow}>{warningMessage}</Text>
+        </View>
+      )}
+
       <RadioButton.Group onValueChange={(value) => setSpots(Number(value))} value={spots.toString()}>
         {availableOptions.map((n) => (
           <RadioButton.Item
@@ -75,15 +112,9 @@ const ReservationScreen = () => {
       </RadioButton.Group>
 
       <View style={styles.buttonContainer}>
-        {/* Reserve Button */}
-        <Button
-          title="Reserve"
-          onPress={handleReserve}
-          loading={isReserving}
-          disabled={isReserving || !canReserveMore}
-        />
-        {/* Cancel Reservation Button */}
-        {reservedSpots > 0 && (
+        <Button title="Reserve" onPress={handleReserve} loading={isReserving} disabled={isReserving} />
+
+        {localReservedSpots > 0 && (
           <Button
             title="Cancel Reservation"
             onPress={handleCancelReservation}
