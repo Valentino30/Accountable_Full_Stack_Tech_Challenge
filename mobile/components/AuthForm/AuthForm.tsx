@@ -1,17 +1,18 @@
 import { useState, useRef } from "react";
-import { View, TextInput, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, TextInput, Text, ActivityIndicator, TouchableOpacity, Keyboard } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./styles";
 import Button from "../Button";
 
 interface AuthFormProps {
   title: string;
+  loadingTitle: string;
   onSubmit: (email: string, password: string) => Promise<void>;
   isPending: boolean;
   error: unknown;
 }
 
-export default function AuthForm({ title, onSubmit, isPending, error }: AuthFormProps) {
+export default function AuthForm({ title, loadingTitle, onSubmit, isPending, error }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [inputTouched, setInputTouched] = useState(false);
@@ -29,8 +30,8 @@ export default function AuthForm({ title, onSubmit, isPending, error }: AuthForm
   };
 
   const handleSubmit = async () => {
-    emailRef.current?.blur();
-    passwordRef.current?.blur();
+    Keyboard.dismiss();
+
     setInputTouched(false);
 
     const trimmedEmail = email.trim();
@@ -79,9 +80,7 @@ export default function AuthForm({ title, onSubmit, isPending, error }: AuthForm
         </View>
       )}
 
-      {isPending && <ActivityIndicator size="large" color="#1a73e8" />}
-
-      <Button title={title} onPress={handleSubmit} />
+      <Button title={title} loading={isPending} loadingTitle={loadingTitle} onPress={handleSubmit} />
     </View>
   );
 }

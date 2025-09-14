@@ -18,9 +18,4 @@ export default StyleSheet.create({
     fontSize: 14,
     color: "#555",
   },
-  toggleButton: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#1a73e8",
-  },
 });
