@@ -8,12 +8,13 @@ dotenv.config({ quiet: true });
 // ---------------------
 // ENV VALIDATION
 // ---------------------
-const requiredEnvs = ["MONGO_URI", "PORT", "JWT_SECRET"];
+const requiredEnvs = ["MONGO_URI", "PORT", "ACCESS_TOKEN_SECRET", "REFRESH_TOKEN_SECRET"];
 requiredEnvs.forEach((key) => {
   if (!process.env[key]) throw new Error(`❌ ${key} is required in environment variables`);
 });
 
-export const JWT_SECRET = process.env.JWT_SECRET as string;
+export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET as string;
+export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET as string;
 const PORT = parseInt(process.env.PORT as string, 10);
 const MONGO_URI = process.env.MONGO_URI as string;
 const HOST = process.env.HOST || "0.0.0.0";

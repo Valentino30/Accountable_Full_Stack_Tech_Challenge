@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
-import { JWT_SECRET } from "..";
+import { ACCESS_TOKEN_SECRET } from "..";
 
 export const getCurrentUser = async (req: Request, res: Response) => {
   try {
@@ -11,7 +11,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as { id: string };
 
     const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ error: "User not found" });
