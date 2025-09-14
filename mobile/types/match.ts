@@ -15,9 +15,10 @@ export interface Match {
 export interface UseMatchesParams {
   search: string;
   filterType: MatchFilterType;
+  date?: Date | null;
 }
 
-export type MatchFilterType = "country" | "team" | "date";
+export type MatchFilterType = "country" | "team";
 
 export interface MatchFilters {
   country?: string;

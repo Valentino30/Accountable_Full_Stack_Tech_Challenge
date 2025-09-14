@@ -1,16 +1,15 @@
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
-  container: {
+  row: {
     flexDirection: "row",
     alignItems: "center",
-    margin: 16,
   },
   searchInput: {
     flex: 1,
     borderWidth: 1,
     borderColor: "#ddd",
-    padding: 10,
+    padding: 12,
     borderRadius: 8,
     backgroundColor: "#fff",
     height: 50,
@@ -20,7 +19,8 @@ export default StyleSheet.create({
     width: 120,
   },
   dropdownStyle: {
-    borderWidth: 0,
+    borderWidth: 1,
+    borderColor: "#ddd",
     elevation: 0,
   },
   dropdownContainer: {

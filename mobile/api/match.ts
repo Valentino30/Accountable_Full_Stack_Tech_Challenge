@@ -1,22 +1,22 @@
 import apiClient from "./apiClient";
-import { Match, MatchFilters, MatchFilterType } from "../types/match";
+import { Match, UseMatchesParams } from "../types/match";
 import { ReservationResponse } from "../types/reservation";
 
 // Get all matches
-export const getAllMatches = async (search: string, filterType: MatchFilterType): Promise<Match[]> => {
+export const getAllMatches = async ({ search, filterType, date }: UseMatchesParams): Promise<Match[]> => {
   const params = new URLSearchParams();
 
   if (search) {
     if (filterType === "country") params.append("country", search);
-    else if (filterType === "team") {
-      // We don’t know if it’s home or away, so let backend handle both
-      params.append("team", search);
-    } else if (filterType === "date") params.append("date", search);
-    else params.append("search", search); // fallback: global search
+    else if (filterType === "team") params.append("team", search);
+  }
+
+  // append date only if defined
+  if (date) {
+    params.append("date", date.toISOString());
   }
 
   const queryString = params.toString() ? `?${params.toString()}` : "";
-  console.log(`/events${queryString}`);
   const res = await apiClient.get<Match[]>(`/events${queryString}`);
   return res.data;
 };
