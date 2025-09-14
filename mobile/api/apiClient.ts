@@ -27,10 +27,10 @@ const apiClient = axios.create({
  * - Injects token into headers if it exists.
  */
 apiClient.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem("auth-token");
+  const accessToken = await AsyncStorage.getItem("access-token");
 
-  if (token && config.headers) {
-    config.headers["Authorization"] = `Bearer ${token}`;
+  if (accessToken && config.headers) {
+    config.headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
   return config;
@@ -40,13 +40,42 @@ apiClient.interceptors.request.use(async (config) => {
  * Response interceptor
  * Runs after every response or error.
  * - Logs errors globally for easier debugging.
- * - Could handle specific status codes (401, 429) here if desired.
+ * - Automatically handles token refresh if 401 due to expired access token.
  */
 apiClient.interceptors.response.use(
-  (response) => response, // successful response, return as-is
-  (error) => {
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = await AsyncStorage.getItem("refresh-token");
+        if (!refreshToken) throw new Error("No refresh token available");
+
+        const res = await axios.post(`${apiUrl}/auth/refresh-token`, { token: refreshToken });
+        const newAccessToken = res.data.accessToken;
+
+        if (!newAccessToken) throw new Error("Refresh token failed, no access token returned");
+
+        await AsyncStorage.setItem("access-token", newAccessToken);
+
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        console.error("Refresh token failed:", refreshError);
+
+        await AsyncStorage.removeItem("access-token");
+        await AsyncStorage.removeItem("refresh-token");
+        await AsyncStorage.removeItem("user-id");
+
+        return Promise.reject(refreshError);
+      }
+    }
+
     console.error("API Error:", error.response?.data || error.message);
-    return Promise.reject(error); // propagate error to caller
+    return Promise.reject(error);
   }
 );
 

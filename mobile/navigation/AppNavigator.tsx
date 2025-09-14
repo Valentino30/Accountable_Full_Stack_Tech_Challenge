@@ -1,11 +1,11 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import { useAuth } from "../context/AuthContext";
 import AuthScreen from "../screens/AuthScreen";
-import LogoutButton from "../components/LogoutButton";
 import { Match } from "../types/match";
 import MatchListScreen from "../screens/MatchListScreen";
 import ReservationScreen from "../screens/ReservationScreen";
+import { useAuth } from "../hooks/useAuth";
+import LogoutIconButton from "../components/LogoutIconButton";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -16,16 +16,16 @@ export type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
-  const { token } = useAuth();
+  const { accessToken } = useAuth();
 
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerRight: () => (token ? <LogoutButton /> : null),
+          headerRight: () => (accessToken ? <LogoutIconButton /> : null),
         }}
       >
-        {token ? (
+        {accessToken ? (
           <>
             <Stack.Screen name="Matches" component={MatchListScreen} options={{ title: "Matches" }} />
             <Stack.Screen name="Reservation" component={ReservationScreen} options={{ title: "Reserve Spots" }} />

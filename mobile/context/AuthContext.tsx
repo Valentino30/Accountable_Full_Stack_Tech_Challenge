@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginUser, registerUser } from "../api/auth";
@@ -7,31 +7,28 @@ import type { AuthContextType } from "../types/auth";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
-  return context;
-};
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const queryClient = useQueryClient();
-  const [token, setToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [hydrated, setHydrated] = useState(false); // track hydration
+  const [hydrated, setHydrated] = useState(false);
 
-  // Hydrate token & userId from storage
   useEffect(() => {
     const hydrateAuth = async () => {
-      const storedToken = await AsyncStorage.getItem("auth-token");
+      const storedAccess = await AsyncStorage.getItem("access-token");
+      const storedRefresh = await AsyncStorage.getItem("refresh-token");
       const storedUserId = await AsyncStorage.getItem("user-id");
 
-      if (storedToken) setToken(storedToken);
+      if (storedAccess) setAccessToken(storedAccess);
+      if (storedRefresh) setRefreshToken(storedRefresh);
       if (storedUserId) setUserId(storedUserId);
-      queryClient.setQueryData(["auth-token"], storedToken);
+
+      queryClient.setQueryData(["access-token"], storedAccess);
+      queryClient.setQueryData(["refresh-token"], storedRefresh);
       queryClient.setQueryData(["user-id"], storedUserId);
 
-      // If token exists but no userId, fetch from backend
-      if (storedToken && !storedUserId) {
+      if (storedAccess && !storedUserId) {
         try {
           const { userId: fetchedId } = await fetchCurrentUser();
           setUserId(fetchedId);
@@ -47,10 +44,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     hydrateAuth();
   }, [queryClient]);
 
-  const handleAuthSuccess = async (newToken: string) => {
-    setToken(newToken);
-    await AsyncStorage.setItem("auth-token", newToken);
-    queryClient.setQueryData(["auth-token"], newToken);
+  const handleAuthSuccess = async (tokens: { accessToken: string; refreshToken: string }) => {
+    setAccessToken(tokens.accessToken);
+    setRefreshToken(tokens.refreshToken);
+
+    await AsyncStorage.setItem("access-token", tokens.accessToken);
+    await AsyncStorage.setItem("refresh-token", tokens.refreshToken);
+
+    queryClient.setQueryData(["access-token"], tokens.accessToken);
+    queryClient.setQueryData(["refresh-token"], tokens.refreshToken);
 
     const { userId: newUserId } = await fetchCurrentUser();
     setUserId(newUserId);
@@ -60,17 +62,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const loginMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const newToken = await loginUser({ email, password });
-      await handleAuthSuccess(newToken);
-      return newToken;
+      const tokens = await loginUser({ email, password });
+      await handleAuthSuccess(tokens);
+      return tokens;
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const newToken = await registerUser({ email, password });
-      await handleAuthSuccess(newToken);
-      return newToken;
+      const tokens = await registerUser({ email, password });
+      await handleAuthSuccess(tokens);
+      return tokens;
     },
   });
 
@@ -83,21 +85,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = async () => {
-    await AsyncStorage.removeItem("auth-token");
+    await AsyncStorage.removeItem("access-token");
+    await AsyncStorage.removeItem("refresh-token");
     await AsyncStorage.removeItem("user-id");
-    setToken(null);
+
+    setAccessToken(null);
+    setRefreshToken(null);
     setUserId(null);
-    queryClient.removeQueries({ queryKey: ["auth-token"] });
+
+    queryClient.removeQueries({ queryKey: ["access-token"] });
+    queryClient.removeQueries({ queryKey: ["refresh-token"] });
     queryClient.removeQueries({ queryKey: ["user-id"] });
   };
 
-  // Only render children after hydration to prevent null userId flashes
-  if (!hydrated) return null; // or a spinner/loading component
+  if (!hydrated) return null;
 
   return (
     <AuthContext.Provider
       value={{
-        token,
+        accessToken,
+        refreshToken,
         userId,
         login,
         register,

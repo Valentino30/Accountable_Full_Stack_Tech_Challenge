@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 import AuthForm from "../../components/AuthForm";
-import { useAuth } from "../../context/AuthContext";
 import styles from "./styles";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function AuthScreen() {
   const { login, register, isPending, error } = useAuth();

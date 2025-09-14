@@ -1,5 +1,6 @@
 export interface LoginResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface LoginParams {
@@ -8,7 +9,8 @@ export interface LoginParams {
 }
 
 export interface RegisterResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface RegisterParams {
@@ -17,12 +19,13 @@ export interface RegisterParams {
 }
 
 export interface RefreshTokenResponse {
-  token: string;
+  accessToken: string;
 }
 
 export interface AuthContextType {
-  token: string | null;
-  userId: string | null; // ← add userId
+  accessToken: string | null;
+  refreshToken: string | null;
+  userId: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
