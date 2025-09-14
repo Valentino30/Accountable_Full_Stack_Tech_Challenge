@@ -1,20 +1,24 @@
 import { useState } from "react";
-import { View, TextInput, FlatList } from "react-native";
+import { View, FlatList } from "react-native";
 import MatchCard from "../../components/MatchCard";
 import styles from "./styles";
 import { useMatches } from "../../hooks/useMatches";
+import { MatchFilterType } from "../../types/match";
+import SearchBarWithFilter from "../../components/SearchBarWithFilter";
 
 const MatchListScreen = () => {
   const [search, setSearch] = useState("");
-  const { data: matches = [], refetch, isFetching } = useMatches(search);
+  const [filterType, setFilterType] = useState<MatchFilterType>("team");
+
+  const { data: matches = [], refetch, isFetching } = useMatches({ search, filterType });
 
   return (
     <View style={styles.container}>
-      <TextInput
-        placeholder="Search by country, team, or date"
-        value={search}
-        onChangeText={setSearch}
-        style={styles.searchInput}
+      <SearchBarWithFilter
+        search={search}
+        onSearchChange={setSearch}
+        filterType={filterType}
+        onFilterChange={setFilterType}
       />
 
       <FlatList

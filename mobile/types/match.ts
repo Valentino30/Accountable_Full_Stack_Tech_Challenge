@@ -12,6 +12,20 @@ export interface Match {
   reservedByUser?: boolean;
 }
 
+export interface UseMatchesParams {
+  search: string;
+  filterType: MatchFilterType;
+}
+
+export type MatchFilterType = "country" | "team" | "date";
+
+export interface MatchFilters {
+  country?: string;
+  date?: string;
+  homeTeam?: string;
+  awayTeam?: string;
+  league?: string;
+}
 export interface TeamLogoParams {
   initials: string;
   color: string;

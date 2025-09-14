@@ -1,16 +1,14 @@
 import { useQuery, useMutation, useQueryClient, UseMutationResult, UseQueryResult } from "@tanstack/react-query";
-import { Match } from "../types/match";
+import { Match, MatchFilters, UseMatchesParams } from "../types/match";
 import { ApiError } from "../types/api";
 import { ReservationResponse } from "../types/reservation";
 import { cancelReservation, getAllMatches, reserveMatch } from "../api/match";
 
 // Fetch all matches
-export const useMatches = (search = ""): UseQueryResult<Match[], ApiError> => {
+export const useMatches = ({ search, filterType }: UseMatchesParams): UseQueryResult<Match[], ApiError> => {
   return useQuery<Match[], ApiError>({
-    queryKey: ["matches", search],
-    queryFn: async () => {
-      return getAllMatches(search);
-    },
+    queryKey: ["matches", search, filterType],
+    queryFn: () => getAllMatches(search, filterType),
   });
 };
 
