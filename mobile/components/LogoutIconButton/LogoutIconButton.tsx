@@ -1,9 +1,9 @@
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "../../context/AuthContext";
 import styles from "./styles";
+import { useAuth } from "../../hooks/useAuth";
 
-const LogoutButton = () => {
+const LogoutIconButton = () => {
   const { logout } = useAuth();
 
   return (
@@ -13,4 +13,4 @@ const LogoutButton = () => {
   );
 };
 
-export default LogoutButton;
+export default LogoutIconButton;
