@@ -4,22 +4,28 @@ import { Types } from "mongoose";
 import { AuthRequest } from "../middleware/auth";
 
 // Get all events with optional filters
-// Get all events with optional filters
 export const getEvents = async (req: AuthRequest, res: Response) => {
   try {
-    const { country, date, homeTeam, awayTeam, league } = req.query;
+    const { country, date, team } = req.query;
     const filter: Record<string, any> = {};
 
-    if (country) filter.country = country;
+    if (country) {
+      filter.country = { $regex: country as string, $options: "i" };
+    }
+
     if (date) {
       const start = new Date(date as string);
       const end = new Date(start);
       end.setUTCDate(start.getUTCDate() + 1);
       filter.date = { $gte: start, $lt: end };
     }
-    if (homeTeam) filter.homeTeam = homeTeam;
-    if (awayTeam) filter.awayTeam = awayTeam;
-    if (league) filter.league = league;
+
+    if (team) {
+      filter.$or = [
+        { homeTeam: { $regex: team as string, $options: "i" } },
+        { awayTeam: { $regex: team as string, $options: "i" } },
+      ];
+    }
 
     const events = await Event.find(filter).lean();
     return res.json(events);
