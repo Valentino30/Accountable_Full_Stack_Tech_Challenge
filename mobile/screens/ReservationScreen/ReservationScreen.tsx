@@ -2,12 +2,12 @@ import { Text, ScrollView, View, Alert } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
 import MatchCard from "../../components/MatchCard";
 import Button from "../../components/Button";
 import { Match } from "../../types/match";
 import styles from "./styles";
 import { useCancelReservation, useReserveMatch } from "../../hooks/useMatches";
+import { useAuth } from "../../hooks/useAuth";
 
 type ReservationRouteProp = RouteProp<{ params: { match: Match } }, "params">;
 
@@ -15,7 +15,7 @@ const MAX_SPOTS_PER_USER = 2;
 
 const ReservationScreen = () => {
   const route = useRoute<ReservationRouteProp>();
-  const { token, userId } = useAuth();
+  const { userId } = useAuth();
   const { match } = route.params;
   const userReservation = match.reservations.find((r) => r.userId === userId);
   const reservedSpots = userReservation?.spotsReserved || 0;
@@ -23,8 +23,8 @@ const ReservationScreen = () => {
   const canReserveMore = reservedSpots < MAX_SPOTS_PER_USER;
   const availableOptions = Array.from({ length: MAX_SPOTS_PER_USER - reservedSpots }, (_, i) => i + 1);
 
-  const { mutate: reserveMutate, isPending: isReserving } = useReserveMatch(token);
-  const { mutate: cancelMutate, isPending: isCancelling } = useCancelReservation(token);
+  const { mutate: reserveMutate, isPending: isReserving } = useReserveMatch();
+  const { mutate: cancelMutate, isPending: isCancelling } = useCancelReservation();
 
   const handleReserve = () => {
     if (!canReserveMore) return;

@@ -5,29 +5,26 @@ import { ReservationResponse } from "../types/reservation";
 import { cancelReservation, getAllMatches, reserveMatch } from "../api/match";
 
 // Fetch all matches
-export const useMatches = (token: string | null, search = ""): UseQueryResult<Match[], ApiError> => {
+export const useMatches = (search = ""): UseQueryResult<Match[], ApiError> => {
   return useQuery<Match[], ApiError>({
     queryKey: ["matches", search],
     queryFn: async () => {
-      if (!token) throw new Error("User not authenticated");
-
-      // Use the API function you already wrote
-      const res = await getAllMatches(token, search);
-      return res;
+      return getAllMatches(search);
     },
-    enabled: !!token,
   });
 };
 
 // Reserve a match
-export const useReserveMatch = (
-  token: string | null
-): UseMutationResult<ReservationResponse, ApiError, { matchId: string; spotsReserved: number }> => {
+export const useReserveMatch = (): UseMutationResult<
+  ReservationResponse,
+  ApiError,
+  { matchId: string; spotsReserved: number }
+> => {
   const queryClient = useQueryClient();
 
   return useMutation<ReservationResponse, ApiError, { matchId: string; spotsReserved: number }>({
     mutationFn: async ({ matchId, spotsReserved }) => {
-      return reserveMatch(matchId, spotsReserved, token);
+      return reserveMatch(matchId, spotsReserved);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["matches"] });
@@ -36,18 +33,14 @@ export const useReserveMatch = (
 };
 
 // Cancel a reservation
-export const useCancelReservation = (
-  token: string | null
-): UseMutationResult<ReservationResponse, ApiError, { matchId: string }> => {
+export const useCancelReservation = (): UseMutationResult<ReservationResponse, ApiError, { matchId: string }> => {
   const queryClient = useQueryClient();
 
   return useMutation<ReservationResponse, ApiError, { matchId: string }>({
     mutationFn: async ({ matchId }) => {
-      if (!token) throw new Error("User not authenticated");
-      return cancelReservation(matchId, token);
+      return cancelReservation(matchId);
     },
     onSuccess: () => {
-      // Invalidate matches query to refresh cached data
       queryClient.invalidateQueries({ queryKey: ["matches"] });
     },
   });
