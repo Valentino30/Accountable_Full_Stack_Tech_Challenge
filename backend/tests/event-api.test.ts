@@ -36,7 +36,7 @@ describe("Events API", () => {
     const resDate = await request(app).get("/events").query({ date: "2030-01-01" }).expect(200);
     expect(resDate.body[0].homeTeam).toBe("Alpha");
 
-    const resTeam = await request(app).get("/events").query({ awayTeam: "Beta" }).expect(200);
+    const resTeam = await request(app).get("/events").query({ team: "Beta" }).expect(200);
     expect(resTeam.body[0].awayTeam).toBe("Beta");
   });
 });
