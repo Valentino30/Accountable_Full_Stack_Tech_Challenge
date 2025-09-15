@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import bcrypt from "bcryptjs";
 import User from "../../src/models/User";
 
 let mongoServer: MongoMemoryServer;
@@ -19,11 +20,18 @@ export async function teardownTestDB() {
   if (mongoServer) await mongoServer.stop();
 }
 
-export async function seedTestUser(overrides: Partial<any> = {}): Promise<string> {
+export async function seedTestUser(overrides: Partial<any> = {}): Promise<any> {
+  const plainPassword = overrides.password || "Sup3r$ecretPa55word!";
+  const hashed = await bcrypt.hash(plainPassword, 10);
+
   const user = await User.create({
-    email: "user@example.com",
-    password: "hashedpassword",
-    ...overrides,
+    email: overrides.email || "user@example.com",
+    password: hashed,
   });
-  return user._id.toString();
+
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    password: plainPassword,
+  };
 }

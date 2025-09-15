@@ -3,7 +3,7 @@ import zxcvbn from "zxcvbn";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "..";
+import { ENV } from "../config/env"; // ✅ centralized config
 
 // -------------------------
 // REGISTER USER
@@ -11,7 +11,9 @@ import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "..";
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ error: "Email and password required" });
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password required" });
+    }
 
     // Check password strength
     const strength = zxcvbn(password);
@@ -27,15 +29,15 @@ export const registerUser = async (req: Request, res: Response) => {
     const user = await User.create({ email, password: hashed });
 
     // Generate tokens
-    const accessToken = jwt.sign({ id: user._id }, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
-    const refreshToken = jwt.sign({ id: user._id }, REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+    const accessToken = jwt.sign({ id: user._id }, ENV.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+    const refreshToken = jwt.sign({ id: user._id }, ENV.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
-    res.json({ accessToken, refreshToken });
+    res.status(201).json({ accessToken, refreshToken });
   } catch (err: any) {
     if (err.code === 11000 && err.keyPattern?.email) {
       return res.status(400).json({ error: "Email is already registered" });
     }
-    console.error(err);
+    console.error("registerUser error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -52,8 +54,8 @@ export const loginUser = async (req: Request, res: Response) => {
   if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
   // Generate tokens
-  const accessToken = jwt.sign({ id: user._id }, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
-  const refreshToken = jwt.sign({ id: user._id }, REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+  const accessToken = jwt.sign({ id: user._id }, ENV.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+  const refreshToken = jwt.sign({ id: user._id }, ENV.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
   res.json({ accessToken, refreshToken });
 };
@@ -64,28 +66,27 @@ export const loginUser = async (req: Request, res: Response) => {
 export const refreshToken = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
-
     if (!token) {
-      return res.status(400).json({ message: "Refresh token missing" });
+      return res.status(400).json({ error: "Refresh token missing" });
     }
 
     // Verify refresh token
-    const payload = jwt.verify(token, REFRESH_TOKEN_SECRET) as { id: string };
+    const payload = jwt.verify(token, ENV.REFRESH_TOKEN_SECRET) as { id: string };
 
     // Check if user exists
     const user = await User.findById(payload.id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Issue new access token
-    const accessToken = jwt.sign({ id: user._id }, ACCESS_TOKEN_SECRET, {
+    const accessToken = jwt.sign({ id: user._id }, ENV.ACCESS_TOKEN_SECRET, {
       expiresIn: "15m",
     });
 
     res.json({ accessToken });
   } catch (err) {
-    console.error("Refresh token error:", err);
-    return res.status(401).json({ message: "Invalid or expired refresh token" });
+    console.error("refreshToken error:", err);
+    return res.status(401).json({ error: "Invalid or expired refresh token" });
   }
 };

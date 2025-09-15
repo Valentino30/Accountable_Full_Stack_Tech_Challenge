@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { ACCESS_TOKEN_SECRET } from "..";
+import { ENV } from "../config/env";
 
 export interface AuthRequest extends Request {
   userId?: string;
@@ -16,10 +16,10 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded: any = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    const decoded = jwt.verify(token, ENV.ACCESS_TOKEN_SECRET) as { id: string };
     req.userId = decoded.id;
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
   }
 };

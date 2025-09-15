@@ -4,7 +4,7 @@ import { setupTestDB, dropTestDB, teardownTestDB, seedTestUser } from "./utils/m
 import { createTestApp } from "./utils/testApp";
 
 let app: express.Express;
-let userId: string;
+let seededUser: { id: string; email: string; password: string };
 
 beforeAll(async () => {
   await setupTestDB();
@@ -15,15 +15,15 @@ afterAll(teardownTestDB);
 
 beforeEach(async () => {
   await dropTestDB();
-  userId = await seedTestUser({ email: "test@example.com", password: "hashedpassword" });
+  seededUser = await seedTestUser();
 });
 
 describe("Users API - GET /api/users/me", () => {
   it("returns current user successfully", async () => {
-    const res = await request(app).get("/api/users/me").set("x-test-user-id", userId).expect(200);
+    const res = await request(app).get("/api/users/me").set("x-test-user-id", seededUser.id).expect(200);
 
-    expect(res.body.userId).toBe(userId);
-    expect(res.body.email).toBe("test@example.com");
+    expect(res.body.userId).toBe(seededUser.id);
+    expect(res.body.email).toBe(seededUser.email);
   });
 
   it("returns 401 if user ID header is missing", async () => {

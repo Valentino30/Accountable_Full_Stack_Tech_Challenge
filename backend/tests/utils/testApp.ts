@@ -1,5 +1,6 @@
 import express from "express";
 import { getCurrentUser } from "../../src/controllers/userController";
+import { loginUser, refreshToken, registerUser } from "../../src/controllers/authController";
 import { getEvents, getEventById, reserveEvent, cancelReservation } from "../../src/controllers/eventController";
 
 export function createTestApp() {
@@ -17,16 +18,21 @@ export function createTestApp() {
 
   const router = express.Router();
 
+  // Auth routes
+  router.post("/auth/login", loginUser);
+  router.post("/auth/register", registerUser);
+  router.post("/auth/refresh-token", refreshToken);
+
+  // User routes
+  router.get("/users/me", getCurrentUser);
+
   // Event routes
   router.get("/events", getEvents);
   router.get("/events/:id", getEventById);
   router.post("/events/:id/reserve", reserveEvent);
   router.delete("/events/:id/reserve", cancelReservation);
 
-  // User routes
-  router.get("/users/me", getCurrentUser);
-
-  // Mount with /api prefix
+  // Mount everything with /api prefix
   app.use("/api", router);
 
   return app;
