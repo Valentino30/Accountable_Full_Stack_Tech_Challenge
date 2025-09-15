@@ -1,24 +1,21 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import { Response } from "express";
 import User from "../models/User";
-import { ACCESS_TOKEN_SECRET } from "..";
+import { AuthRequest } from "../middleware/auth";
 
-export const getCurrentUser = async (req: Request, res: Response) => {
+export const getCurrentUser = async (req: AuthRequest, res: Response) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
+    const { userId } = req;
+
+    if (!userId) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as { id: string };
-
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(userId).lean(); // lean() is faster if you don't need mongoose methods
     if (!user) return res.status(404).json({ error: "User not found" });
 
     res.json({ userId: user._id.toString(), email: user.email });
   } catch (err: any) {
     console.error("getCurrentUser error:", err);
-    res.status(401).json({ error: "Unauthorized" });
+    res.status(500).json({ error: "Server error" });
   }
 };

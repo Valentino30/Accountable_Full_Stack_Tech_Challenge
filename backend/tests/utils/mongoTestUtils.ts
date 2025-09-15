@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import User from "../../src/models/User";
 
 let mongoServer: MongoMemoryServer;
 
@@ -16,4 +17,13 @@ export async function dropTestDB() {
 export async function teardownTestDB() {
   await mongoose.disconnect();
   if (mongoServer) await mongoServer.stop();
+}
+
+export async function seedTestUser(overrides: Partial<any> = {}): Promise<string> {
+  const user = await User.create({
+    email: "user@example.com",
+    password: "hashedpassword",
+    ...overrides,
+  });
+  return user._id.toString();
 }
