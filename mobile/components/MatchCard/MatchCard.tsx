@@ -11,9 +11,9 @@ type MatchCardNavigationProp = StackNavigationProp<RootStackParamList, "Matches"
 
 interface MatchCardProps {
   match: Match;
-  clickable?: boolean; // default true
-  onPress?: () => void; // optional custom handler
-  showReserveButton?: boolean; // optional to hide Reserve button
+  clickable?: boolean;
+  onPress?: () => void;
+  showReserveButton?: boolean;
 }
 
 const MatchCard = ({ match, clickable = true, onPress, showReserveButton = true }: MatchCardProps) => {
@@ -64,7 +64,7 @@ const MatchCard = ({ match, clickable = true, onPress, showReserveButton = true 
       <Text style={styles.spots}>{match.availableSeats} spots available</Text>
 
       {/* Reserve Button using Button */}
-      {clickable && showReserveButton && !onPress && <Button title="Reserve" onPress={handlePress} />}
+      {clickable && showReserveButton && <Button title="Reserve" onPress={onPress ?? handlePress} />}
     </TouchableOpacity>
   );
 };
