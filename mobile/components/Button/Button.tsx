@@ -1,4 +1,10 @@
-import { Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native'
+import {
+  StyleProp,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native'
 import { opacities } from '../../styles/theme'
 import styles from './styles'
 
@@ -8,7 +14,7 @@ interface SharedButtonProps {
   loading?: boolean
   loadingTitle?: string
   disabled?: boolean
-  containerStyle?: ViewStyle
+  containerStyle?: StyleProp<ViewStyle>
   textStyle?: TextStyle
 }
 

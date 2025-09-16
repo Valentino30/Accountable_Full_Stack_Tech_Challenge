@@ -1,32 +1,42 @@
 import { StyleSheet } from 'react-native'
-import { borderRadius, colors, shadow, spacing } from '../../styles/theme'
+import { borderRadius, borders, colors, spacing } from '../../styles/theme'
 
-const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     padding: spacing.lg,
-    backgroundColor: colors.background,
-    flexGrow: 1,
-  },
-  buttonContainer: {
-    gap: spacing.sm,
   },
   reservationTag: {
-    width: '100%',
-    padding: spacing.lg,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.lg,
-    justifyContent: 'center',
+    padding: spacing.sm,
+    borderRadius: borderRadius.sm,
+    borderWidth: borders.width,
     alignItems: 'center',
-    ...shadow.sm,
+    marginBottom: spacing.md,
   },
   reservationTagGreen: {
     backgroundColor: colors.success,
+    borderColor: colors.success,
     color: colors.white,
   },
   reservationTagYellow: {
     backgroundColor: colors.warning,
+    borderColor: colors.warning,
     color: colors.textPrimary,
   },
+  reservationTagRed: {
+    backgroundColor: colors.error,
+    borderColor: colors.error,
+    color: colors.white,
+  },
+  buttonContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: spacing.xxl,
+    marginBottom: spacing.md,
+  },
+  buttonFullWidth: {
+    width: '100%',
+  },
+  buttonTopMargin: {
+    marginTop: spacing.sm,
+  },
 })
-
-export default styles
