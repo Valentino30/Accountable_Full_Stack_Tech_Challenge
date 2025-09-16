@@ -7,7 +7,7 @@ import Button from "../../components/Button";
 import { Match } from "../../types/match";
 import styles from "./styles";
 import { useCancelReservation, useReserveMatch } from "../../hooks/useMatches";
-import { useAuth } from "../../hooks/useAuth";
+import { useUser } from "../../hooks/useUser";
 
 type ReservationRouteProp = RouteProp<{ params: { match: Match } }, "params">;
 
@@ -15,7 +15,7 @@ const MAX_SPOTS_PER_USER = 2;
 
 const ReservationScreen = () => {
   const route = useRoute<ReservationRouteProp>();
-  const { userId } = useAuth();
+  const { userId } = useUser();
   const { match } = route.params;
 
   const userReservation = match.reservations.find((r) => r.userId === userId);

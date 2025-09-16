@@ -1,62 +1,38 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createContext, ReactNode } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginUser, registerUser } from "../api/auth";
 import type { AuthContextType } from "../types/auth";
+import { authTokensQueryKey } from "../queries/authQueries";
+import { getTokens } from "../utils/auth";
+import { queryClient } from "../queryClient";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const queryClient = useQueryClient();
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    const hydrateAuth = async () => {
-      const storedAccess = await AsyncStorage.getItem("access-token");
-      const storedRefresh = await AsyncStorage.getItem("refresh-token");
-      const storedUserId = await AsyncStorage.getItem("user-id");
-
-      if (storedAccess) setAccessToken(storedAccess);
-      if (storedRefresh) setRefreshToken(storedRefresh);
-      if (storedUserId) setUserId(storedUserId);
-
-      queryClient.setQueryData(["access-token"], storedAccess);
-      queryClient.setQueryData(["refresh-token"], storedRefresh);
-      queryClient.setQueryData(["user-id"], storedUserId);
-
-      setHydrated(true);
-    };
-    hydrateAuth();
-  }, [queryClient]);
+  const { data, isPending } = useQuery({
+    queryKey: authTokensQueryKey,
+    queryFn: getTokens,
+  });
 
   const handleAuthSuccess = async (tokens: { accessToken: string; refreshToken: string }) => {
-    setAccessToken(tokens.accessToken);
-    setRefreshToken(tokens.refreshToken);
-
     await AsyncStorage.setItem("access-token", tokens.accessToken);
     await AsyncStorage.setItem("refresh-token", tokens.refreshToken);
 
-    queryClient.setQueryData(["access-token"], tokens.accessToken);
-    queryClient.setQueryData(["refresh-token"], tokens.refreshToken);
+    queryClient.setQueryData(authTokensQueryKey, {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    });
   };
 
   const loginMutation = useMutation({
-    mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const tokens = await loginUser({ email, password });
-      await handleAuthSuccess(tokens);
-      return tokens;
-    },
+    mutationFn: loginUser,
+    onSuccess: handleAuthSuccess,
   });
 
   const registerMutation = useMutation({
-    mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const tokens = await registerUser({ email, password });
-      await handleAuthSuccess(tokens);
-      return tokens;
-    },
+    mutationFn: registerUser,
+    onSuccess: handleAuthSuccess,
   });
 
   const login = async (email: string, password: string) => {
@@ -70,33 +46,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     await AsyncStorage.removeItem("access-token");
     await AsyncStorage.removeItem("refresh-token");
-    await AsyncStorage.removeItem("user-id");
-
-    setAccessToken(null);
-    setRefreshToken(null);
-    setUserId(null);
-
-    queryClient.removeQueries({ queryKey: ["access-token"] });
-    queryClient.removeQueries({ queryKey: ["refresh-token"] });
-    queryClient.removeQueries({ queryKey: ["user-id"] });
+    queryClient.invalidateQueries({ queryKey: authTokensQueryKey });
   };
 
-  if (!hydrated) return null;
+  const value = {
+    login,
+    logout,
+    register,
+    accessToken: data?.accessToken || null,
+    refreshToken: data?.refreshToken || null,
+    error: loginMutation.error || registerMutation.error,
+    isPending: loginMutation.isPending || registerMutation.isPending,
+  };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        accessToken,
-        refreshToken,
-        userId,
-        login,
-        register,
-        logout,
-        isPending: loginMutation.isPending || registerMutation.isPending,
-        error: loginMutation.error || registerMutation.error,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  if (isPending) {
+    return null;
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
