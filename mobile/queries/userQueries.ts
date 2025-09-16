@@ -1,1 +1,1 @@
-export const userQueryKey = ["currentUser"];
+export const userQueryKey = ['currentUser']

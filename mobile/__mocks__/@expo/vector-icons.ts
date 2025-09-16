@@ -1,1 +1,1 @@
-export const Ionicons = (props: any) => null;
+export const Ionicons = (props: any) => null

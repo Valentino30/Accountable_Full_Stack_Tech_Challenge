@@ -1,14 +1,14 @@
-import { TeamLogoParams } from "../types/match";
+import { TeamLogoParams } from '../types/match'
 
 export const generateTeamLogo = (teamName: string): TeamLogoParams => {
-  const colors = ["#FF6B6B", "#4ECDC4", "#556270", "#C7F464", "#FF6B6B"];
-  const color = colors[teamName.charCodeAt(0) % colors.length];
+  const colors = ['#FF6B6B', '#4ECDC4', '#556270', '#C7F464', '#FF6B6B']
+  const color = colors[teamName.charCodeAt(0) % colors.length]
 
   const initials = teamName
-    .split(" ")
+    .split(' ')
     .map((word) => word[0])
-    .join("")
-    .toUpperCase();
+    .join('')
+    .toUpperCase()
 
-  return { initials, color };
-};
+  return { initials, color }
+}

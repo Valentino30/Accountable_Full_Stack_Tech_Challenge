@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { View, FlatList, Text } from "react-native";
-import MatchCard from "../../components/MatchCard";
-import styles from "./styles";
-import { useMatches } from "../../hooks/useMatches";
-import { MatchFilterType } from "../../types/match";
-import SearchBarWithFilter from "../../components/SearchBarWithFilter";
+import { useState } from 'react'
+import { FlatList, Text, View } from 'react-native'
+import MatchCard from '../../components/MatchCard'
+import SearchBarWithFilter from '../../components/SearchBarWithFilter'
+import { useMatches } from '../../hooks/useMatches'
+import { MatchFilterType } from '../../types/match'
+import styles from './styles'
 
 const MatchListScreen = () => {
-  const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState<MatchFilterType>("team");
-  const [date, setDate] = useState<Date | null>(null);
+  const [search, setSearch] = useState('')
+  const [filterType, setFilterType] = useState<MatchFilterType>('team')
+  const [date, setDate] = useState<Date | null>(null)
 
   const {
     data: matches = [],
@@ -19,17 +19,19 @@ const MatchListScreen = () => {
     search,
     filterType,
     date,
-  });
+  })
 
   const EmptyState = () => (
     <View style={styles.emptyContainer}>
       <View style={styles.emptyCard}>
         <Text style={styles.emptyEmoji}>⚽</Text>
         <Text style={styles.emptyTitle}>No Matches Found</Text>
-        <Text style={styles.emptySubtitle}>Try changing the search or date to see matches here.</Text>
+        <Text style={styles.emptySubtitle}>
+          Try changing the search or date to see matches here.
+        </Text>
       </View>
     </View>
-  );
+  )
 
   return (
     <View style={styles.container}>
@@ -49,11 +51,13 @@ const MatchListScreen = () => {
         refreshing={isFetching}
         onRefresh={refetch}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={matches.length === 0 ? styles.emptyContainer : styles.listContent}
+        contentContainerStyle={
+          matches.length === 0 ? styles.emptyContainer : styles.listContent
+        }
         ListEmptyComponent={isFetching ? null : <EmptyState />}
       />
     </View>
-  );
-};
+  )
+}
 
-export default MatchListScreen;
+export default MatchListScreen

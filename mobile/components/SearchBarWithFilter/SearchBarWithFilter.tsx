@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { View, TextInput } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
-import styles from "./styles";
-import { MatchFilterType } from "../../types/match";
-import DatePicker from "../DatePicker";
+import { useState } from 'react'
+import { TextInput, View } from 'react-native'
+import DropDownPicker from 'react-native-dropdown-picker'
+import { MatchFilterType } from '../../types/match'
+import DatePicker from '../DatePicker'
+import styles from './styles'
 
 interface SearchBarWithFilterProps {
-  search: string;
-  onSearchChange: (value: string) => void;
-  filterType: MatchFilterType;
-  onFilterChange: (value: MatchFilterType) => void;
-  date: Date | null;
-  onDateChange: (date: Date | null) => void;
+  search: string
+  onSearchChange: (value: string) => void
+  filterType: MatchFilterType
+  onFilterChange: (value: MatchFilterType) => void
+  date: Date | null
+  onDateChange: (date: Date | null) => void
 }
 
 const SearchBarWithFilter = ({
@@ -22,12 +22,12 @@ const SearchBarWithFilter = ({
   date,
   onDateChange,
 }: SearchBarWithFilterProps) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   const filters = [
-    { label: "Country", value: "country" },
-    { label: "Team", value: "team" },
-  ];
+    { label: 'Country', value: 'country' },
+    { label: 'Team', value: 'team' },
+  ]
 
   return (
     <View>
@@ -45,8 +45,9 @@ const SearchBarWithFilter = ({
           setOpen={setOpen}
           value={filterType}
           setValue={(callback) => {
-            const newValue = typeof callback === "function" ? callback(filterType) : callback;
-            if (newValue) onFilterChange(newValue as MatchFilterType);
+            const newValue =
+              typeof callback === 'function' ? callback(filterType) : callback
+            if (newValue) onFilterChange(newValue as MatchFilterType)
           }}
           style={styles.dropdownStyle}
           containerStyle={styles.dropdown}
@@ -56,7 +57,7 @@ const SearchBarWithFilter = ({
 
       <DatePicker value={date} onChange={onDateChange} />
     </View>
-  );
-};
+  )
+}
 
-export default SearchBarWithFilter;
+export default SearchBarWithFilter

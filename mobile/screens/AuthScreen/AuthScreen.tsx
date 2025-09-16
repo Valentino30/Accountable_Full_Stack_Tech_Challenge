@@ -1,43 +1,54 @@
-import { useState } from "react";
+import { useState } from 'react'
 import {
-  ScrollView,
-  View,
-  Text,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
+  Text,
   TouchableWithoutFeedback,
-  Keyboard,
-} from "react-native";
-import AuthForm from "../../components/AuthForm";
-import TextButton from "../../components/TextButton";
-import styles from "./styles";
-import { useAuth } from "../../hooks/useAuth";
+  View,
+} from 'react-native'
+import AuthForm from '../../components/AuthForm'
+import TextButton from '../../components/TextButton'
+import { useAuth } from '../../hooks/useAuth'
+import styles from './styles'
 
 export default function AuthScreen() {
-  const { login, register, isPending, error } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
+  const { login, register, isPending, error } = useAuth()
+  const [isLogin, setIsLogin] = useState(true)
 
-  const toggleForm = () => setIsLogin((prev) => !prev);
+  const toggleForm = () => setIsLogin((prev) => !prev)
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
           <AuthForm
-            title={isLogin ? "Login" : "Register"}
-            loadingTitle={isLogin ? "Logging you in..." : "Registering..."}
+            title={isLogin ? 'Login' : 'Register'}
+            loadingTitle={isLogin ? 'Logging you in...' : 'Registering...'}
             onSubmit={isLogin ? login : register}
             isPending={isPending}
             error={error}
           />
 
           <View style={styles.toggleContainer}>
-            <Text style={styles.toggleText}>{isLogin ? "Don't have an account?" : "Already have an account?"}</Text>
+            <Text style={styles.toggleText}>
+              {isLogin ? "Don't have an account?" : 'Already have an account?'}
+            </Text>
 
-            <TextButton onPress={toggleForm} title={isLogin ? "Register" : "Login"} />
+            <TextButton
+              onPress={toggleForm}
+              title={isLogin ? 'Register' : 'Login'}
+            />
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
-  );
+  )
 }

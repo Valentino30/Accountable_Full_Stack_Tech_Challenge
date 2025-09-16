@@ -1,1 +1,1 @@
-export const authTokensQueryKey = ["auth-tokens"];
+export const authTokensQueryKey = ['auth-tokens']

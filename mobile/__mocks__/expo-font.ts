@@ -1,3 +1,3 @@
 export async function loadAsync() {
-  return Promise.resolve();
+  return Promise.resolve()
 }

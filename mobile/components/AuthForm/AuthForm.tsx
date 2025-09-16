@@ -1,50 +1,63 @@
-import { useState, useRef } from "react";
-import { View, TextInput, Text, ActivityIndicator, TouchableOpacity, Keyboard } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import styles from "./styles";
-import Button from "../Button";
+import { useRef, useState } from 'react'
+import {
+  ActivityIndicator,
+  Keyboard,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import Button from '../Button'
+import styles from './styles'
 
 interface AuthFormProps {
-  title: string;
-  loadingTitle: string;
-  onSubmit: (email: string, password: string) => Promise<void>;
-  isPending: boolean;
-  error: unknown;
+  title: string
+  loadingTitle: string
+  onSubmit: (email: string, password: string) => Promise<void>
+  isPending: boolean
+  error: unknown
 }
 
-export default function AuthForm({ title, loadingTitle, onSubmit, isPending, error }: AuthFormProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [inputTouched, setInputTouched] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
+export default function AuthForm({
+  title,
+  loadingTitle,
+  onSubmit,
+  isPending,
+  error,
+}: AuthFormProps) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [inputTouched, setInputTouched] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
 
-  const emailRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null)
+  const passwordRef = useRef<TextInput>(null)
 
-  const hasError = (!!error && !inputTouched) || !!localError;
+  const hasError = (!!error && !inputTouched) || !!localError
 
   const handleFocus = () => {
-    setInputTouched(true);
-    setLocalError(null);
-  };
+    setInputTouched(true)
+    setLocalError(null)
+  }
 
   const handleSubmit = async () => {
-    Keyboard.dismiss();
+    Keyboard.dismiss()
 
-    setInputTouched(false);
+    setInputTouched(false)
 
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
+    const trimmedEmail = email.trim()
+    const trimmedPassword = password.trim()
 
     if (!trimmedEmail || !trimmedPassword) {
-      setLocalError("Please enter both email and password.");
-      return;
+      setLocalError('Please enter both email and password.')
+      return
     }
 
-    setLocalError(null);
-    await onSubmit(trimmedEmail, trimmedPassword);
-  };
+    setLocalError(null)
+    await onSubmit(trimmedEmail, trimmedPassword)
+  }
 
   return (
     <View style={styles.formContainer}>
@@ -62,7 +75,11 @@ export default function AuthForm({ title, loadingTitle, onSubmit, isPending, err
       <View style={styles.passwordContainer}>
         <TextInput
           ref={passwordRef}
-          style={[styles.input, styles.passwordInput, hasError && styles.inputError]}
+          style={[
+            styles.input,
+            styles.passwordInput,
+            hasError && styles.inputError,
+          ]}
           placeholder="Password"
           value={password}
           secureTextEntry={!showPassword}
@@ -74,17 +91,28 @@ export default function AuthForm({ title, loadingTitle, onSubmit, isPending, err
           style={styles.iconButton}
           onPress={() => setShowPassword((prev) => !prev)}
         >
-          <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color="#1a73e8" />
+          <Ionicons
+            name={showPassword ? 'eye-off' : 'eye'}
+            size={24}
+            color="#1a73e8"
+          />
         </TouchableOpacity>
       </View>
 
       {hasError && (
         <View style={styles.errorBox}>
-          <Text style={styles.errorText}>{localError || "Invalid credentials. Please try again."}</Text>
+          <Text style={styles.errorText}>
+            {localError || 'Invalid credentials. Please try again.'}
+          </Text>
         </View>
       )}
 
-      <Button title={title} loading={isPending} loadingTitle={loadingTitle} onPress={handleSubmit} />
+      <Button
+        title={title}
+        loading={isPending}
+        loadingTitle={loadingTitle}
+        onPress={handleSubmit}
+      />
     </View>
-  );
+  )
 }

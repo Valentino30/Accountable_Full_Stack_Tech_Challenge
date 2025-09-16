@@ -1,1 +1,1 @@
-export { default } from "./AuthScreen";
+export { default } from './AuthScreen'

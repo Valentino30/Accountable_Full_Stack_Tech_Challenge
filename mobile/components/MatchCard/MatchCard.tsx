@@ -1,37 +1,47 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import styles from "./styles";
-import { Match } from "../../types/match";
-import { generateTeamLogo } from "../../utils/generateTeamLogo";
-import { RootStackParamList } from "../../navigation/AppNavigator";
-import Button from "../Button"; // import Button
+import { Text, TouchableOpacity, View } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { RootStackParamList } from '../../navigation/AppNavigator'
+import { Match } from '../../types/match'
+import { generateTeamLogo } from '../../utils/generateTeamLogo'
+import Button from '../Button'
+import styles from './styles'
 
-type MatchCardNavigationProp = StackNavigationProp<RootStackParamList, "Matches">;
+// import Button
+
+type MatchCardNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'Matches'
+>
 
 interface MatchCardProps {
-  match: Match;
-  clickable?: boolean;
-  onPress?: () => void;
-  showReserveButton?: boolean;
+  match: Match
+  clickable?: boolean
+  onPress?: () => void
+  showReserveButton?: boolean
 }
 
-const MatchCard = ({ match, clickable = true, onPress, showReserveButton = true }: MatchCardProps) => {
-  const navigation = useNavigation<MatchCardNavigationProp>();
+const MatchCard = ({
+  match,
+  clickable = true,
+  onPress,
+  showReserveButton = true,
+}: MatchCardProps) => {
+  const navigation = useNavigation<MatchCardNavigationProp>()
 
-  const homeLogo = generateTeamLogo(match.homeTeam);
-  const awayLogo = generateTeamLogo(match.awayTeam);
+  const homeLogo = generateTeamLogo(match.homeTeam)
+  const awayLogo = generateTeamLogo(match.awayTeam)
 
   const handlePress = () => {
-    if (onPress) return onPress();
-    if (clickable) navigation.navigate("Reservation", { match });
-  };
+    if (onPress) return onPress()
+    if (clickable) navigation.navigate('Reservation', { match })
+  }
 
   const renderLogo = (initials: string, color: string) => (
     <View style={[styles.logo, { backgroundColor: color }]}>
       <Text style={styles.logoText}>{initials}</Text>
     </View>
-  );
+  )
 
   return (
     <TouchableOpacity
@@ -64,9 +74,11 @@ const MatchCard = ({ match, clickable = true, onPress, showReserveButton = true 
       <Text style={styles.spots}>{match.availableSeats} spots available</Text>
 
       {/* Reserve Button using Button */}
-      {clickable && showReserveButton && <Button title="Reserve" onPress={onPress ?? handlePress} />}
+      {clickable && showReserveButton && (
+        <Button title="Reserve" onPress={onPress ?? handlePress} />
+      )}
     </TouchableOpacity>
-  );
-};
+  )
+}
 
-export default MatchCard;
+export default MatchCard

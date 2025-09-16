@@ -3,4 +3,4 @@ export const useNavigation = () => ({
   goBack: jest.fn(),
   push: jest.fn(),
   replace: jest.fn(),
-});
+})
