@@ -7,8 +7,6 @@ import { generateTeamLogo } from '../../utils/generateTeamLogo'
 import Button from '../Button'
 import styles from './styles'
 
-// import Button
-
 type MatchCardNavigationProp = StackNavigationProp<
   RootStackParamList,
   'Matches'

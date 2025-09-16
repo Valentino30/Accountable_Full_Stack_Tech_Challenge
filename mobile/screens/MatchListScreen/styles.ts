@@ -1,45 +1,42 @@
 import { StyleSheet } from 'react-native'
+import { borderRadius, colors, fontSizes, fontWeights, shadow, spacing } from '../../styles/theme'
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+    padding: spacing.lg,
+    backgroundColor: colors.background,
   },
   listContent: {
-    paddingHorizontal: 4,
-    paddingBottom: 16,
-    paddingTop: 8,
+    paddingHorizontal: spacing.xxs,
+    paddingBottom: spacing.lg,
+    paddingTop: spacing.sm,
   },
   emptyContainer: {
     flex: 1,
-    paddingVertical: 4,
-    paddingHorizontal: 4,
+    paddingVertical: spacing.xxs,
+    paddingHorizontal: spacing.xxs,
   },
   emptyCard: {
-    backgroundColor: '#fff',
-    padding: 24,
-    borderRadius: 12,
+    backgroundColor: colors.white,
+    padding: spacing.xxl,
+    borderRadius: borderRadius.lg,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...shadow.md,
   },
   emptyEmoji: {
-    fontSize: 48,
-    marginBottom: 12,
+    fontSize: fontSizes.xxl,
+    marginBottom: spacing.md,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
+    fontSize: fontSizes.lg,
+    fontWeight: fontWeights.semiBold,
+    marginBottom: spacing.sm,
+    color: colors.textPrimary,
   },
   emptySubtitle: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: fontSizes.sm,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 })

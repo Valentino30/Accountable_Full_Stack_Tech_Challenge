@@ -1,44 +1,51 @@
 import { StyleSheet } from 'react-native'
+import {
+  borderRadius,
+  colors,
+  fontWeights,
+  sizes,
+  spacing,
+} from '../../styles/theme'
 
 export default StyleSheet.create({
   formContainer: {
-    gap: 8,
+    gap: spacing.sm,
     width: '100%',
-    marginVertical: 20,
+    marginVertical: spacing.xl,
   },
   input: {
-    height: 50,
+    height: sizes.inputHeight,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.inputPadding,
+    backgroundColor: colors.white,
   },
   passwordContainer: {
     position: 'relative',
     width: '100%',
   },
   passwordInput: {
-    paddingRight: 45,
+    paddingRight: spacing.extraWidePadding,
   },
   iconButton: {
     position: 'absolute',
-    right: 10,
-    top: 13,
+    right: spacing.iconOffset,
+    top: spacing.componentOffset,
   },
   inputError: {
-    borderColor: '#e53935',
+    borderColor: colors.error,
   },
   errorBox: {
-    backgroundColor: '#fdecea',
-    borderRadius: 8,
-    padding: 10,
+    backgroundColor: colors.errorBackground,
+    borderRadius: borderRadius.md,
+    padding: spacing.iconOffset,
     borderWidth: 1,
-    borderColor: '#f5c6cb',
+    borderColor: colors.errorBorder,
   },
   errorText: {
-    color: '#b71c1c',
+    color: colors.errorText,
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: fontWeights.semiBold,
   },
 })

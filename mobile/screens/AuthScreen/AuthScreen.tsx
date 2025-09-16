@@ -21,7 +21,7 @@ export default function AuthScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={styles.wrapper}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

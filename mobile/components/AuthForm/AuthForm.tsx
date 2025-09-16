@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { colors } from '../../styles/theme'
 import Button from '../Button'
 import styles from './styles'
 
@@ -94,7 +95,7 @@ export default function AuthForm({
           <Ionicons
             name={showPassword ? 'eye-off' : 'eye'}
             size={24}
-            color="#1a73e8"
+            color={colors.primary}
           />
         </TouchableOpacity>
       </View>

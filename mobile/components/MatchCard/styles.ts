@@ -1,129 +1,75 @@
 import { StyleSheet } from 'react-native'
+import {
+  borderRadius,
+  colors,
+  fontSizes,
+  fontWeights,
+  shadow,
+  sizes,
+  spacing,
+} from '../../styles/theme'
 
 export default StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardDisabled: {
-    opacity: 0.7,
-  },
-  badge: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    backgroundColor: '#e53935',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    zIndex: 1,
-  },
-  badgeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xxl,
+    marginBottom: spacing.lg,
+    ...shadow.md,
   },
   teamsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.md,
+    padding: spacing.md,
   },
   teamContainer: {
-    flex: 1,
     alignItems: 'center',
   },
   logo: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: sizes.logoSize,
+    height: sizes.logoSize,
+    borderRadius: borderRadius.logoRadius,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   logoText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: colors.white,
+    fontWeight: fontWeights.bold,
   },
   team: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: fontSizes.sm,
+    fontWeight: fontWeights.bold,
     textAlign: 'center',
-    maxWidth: 70,
+    maxWidth: sizes.maxWidth,
   },
   vsContainer: {
-    width: 40,
+    width: sizes.versusWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
   vs: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#555',
+    fontSize: fontSizes.md,
+    fontWeight: fontWeights.bold,
+    color: colors.textPlaceholder,
   },
   details: {
-    fontSize: 14,
-    color: '#555',
+    fontSize: fontSizes.sm,
+    color: colors.textPlaceholder,
     textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   spots: {
-    fontSize: 14,
-    color: '#388e3c',
+    fontSize: fontSizes.sm,
+    color: colors.success,
     textAlign: 'center',
-    marginBottom: 8,
-    fontWeight: '600',
+    marginBottom: spacing.sm,
+    fontWeight: fontWeights.semiBold,
   },
   spotsFull: {
-    color: '#e53935',
-  },
-
-  // 🔹 Neutral tab-style seat selector
-  seatSelectorContainer: {
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: '#aaa',
-    borderRadius: 6,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  seatButton: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  seatButtonActive: {
-    backgroundColor: '#555', // dark gray highlight
-  },
-  seatButtonText: {
-    color: '#555',
-    fontWeight: '600',
-  },
-  seatButtonTextActive: {
-    color: '#fff',
-  },
-
-  // 🔹 Main action button (stays blue)
-  button: {
-    backgroundColor: '#1a73e8',
-    borderRadius: 6,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: colors.error,
   },
 })

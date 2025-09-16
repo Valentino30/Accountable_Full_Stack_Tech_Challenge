@@ -1,21 +1,25 @@
 import { StyleSheet } from 'react-native'
+import { colors, fontSizes, spacing } from '../../styles/theme'
 
 export default StyleSheet.create({
+  wrapper: {
+    flex: 1,
+  },
   container: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: '#f5f5f5',
+    paddingHorizontal: spacing.xl,
+    backgroundColor: colors.background,
   },
   toggleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: spacing.lg,
   },
   toggleText: {
-    marginRight: 5,
-    fontSize: 14,
-    color: '#555',
+    marginRight: spacing.xs,
+    fontSize: fontSizes.sm,
+    color: colors.textPlaceholder,
   },
 })

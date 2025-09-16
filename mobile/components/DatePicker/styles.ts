@@ -1,59 +1,71 @@
 import { StyleSheet } from 'react-native'
+import {
+  borderRadius,
+  borders,
+  colors,
+  fontSizes,
+  fontWeights,
+  spacing,
+} from '../../styles/theme'
 
 export default StyleSheet.create({
   container: {
-    marginVertical: 10,
+    marginVertical: spacing.md,
     width: '100%',
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 6,
-    color: '#333',
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    backgroundColor: '#fff',
+  inputWrapper: {
+    flex: 1,
   },
   inputText: {
-    fontSize: 16,
-    color: '#555',
+    fontSize: fontSizes.md,
+    color: colors.textPlaceholder,
+  },
+  clearButton: {
+    marginLeft: spacing.sm,
+    padding: spacing.sm,
+  },
+  clearButtonText: {
+    color: colors.error,
+    fontWeight: fontWeights.semiBold,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: colors.overlay,
   },
   modalContent: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    backgroundColor: colors.white,
+    padding: spacing.lg,
+    borderTopLeftRadius: borderRadius.lg,
+    borderTopRightRadius: borderRadius.lg,
+  },
+  modalPicker: {
+    width: '100%',
   },
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 12,
+    marginTop: spacing.md,
   },
   modalButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
   modalButtonText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: fontSizes.md,
+    color: colors.textPrimary,
   },
   modalPrimaryButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 6,
-    marginLeft: 8,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.sm,
+    marginLeft: spacing.sm,
   },
   modalPrimaryButtonText: {
-    color: '#fff',
+    color: colors.white,
+    fontSize: fontSizes.md,
   },
 })

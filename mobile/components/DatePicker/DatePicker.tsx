@@ -3,6 +3,7 @@ import { Modal, Platform, Text, TouchableOpacity, View } from 'react-native'
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker'
+import { opacities } from '../../styles/theme'
 import styles from './styles'
 
 interface DatePickerProps {
@@ -59,11 +60,11 @@ export default function DatePicker({
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={styles.inputRow}>
         <TouchableOpacity
-          style={[styles.input, { flex: 1 }]}
+          style={styles.inputWrapper}
           onPress={openPicker}
-          activeOpacity={0.8}
+          activeOpacity={opacities.active}
         >
           <Text style={styles.inputText}>
             {value ? value.toDateString() : 'Choose a date'}
@@ -71,11 +72,8 @@ export default function DatePicker({
         </TouchableOpacity>
 
         {value && (
-          <TouchableOpacity
-            onPress={onClear}
-            style={{ marginLeft: 8, padding: 8 }}
-          >
-            <Text style={{ color: '#ff3b30', fontWeight: '600' }}>×</Text>
+          <TouchableOpacity onPress={onClear} style={styles.clearButton}>
+            <Text style={styles.clearButtonText}>×</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -98,7 +96,7 @@ export default function DatePicker({
                 mode="date"
                 display="spinner"
                 onChange={handleChange}
-                style={{ width: '100%' }}
+                style={styles.modalPicker}
               />
 
               <View style={styles.modalButtons}>

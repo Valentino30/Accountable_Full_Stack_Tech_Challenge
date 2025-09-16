@@ -1,4 +1,12 @@
 import { StyleSheet } from 'react-native'
+import {
+  borderRadius,
+  borders,
+  colors,
+  shadow,
+  sizes,
+  spacing,
+} from '../../styles/theme'
 
 export default StyleSheet.create({
   row: {
@@ -7,21 +15,21 @@ export default StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    height: 50,
+    borderWidth: borders.width,
+    borderColor: colors.borderDark,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.white,
+    height: sizes.inputHeight,
   },
   dropdown: {
-    marginLeft: 8,
-    width: 120,
+    marginLeft: spacing.sm,
+    width: sizes.dropdownWidth,
   },
   dropdownStyle: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    elevation: 0,
+    borderWidth: borders.width,
+    borderColor: colors.borderDark,
+    ...shadow.sm,
   },
   dropdownContainer: {
     borderWidth: 0,
