@@ -4,7 +4,6 @@ import { ApiError } from "../types/api";
 import { ReservationResponse } from "../types/reservation";
 import { cancelReservation, getAllMatches, reserveMatch } from "../api/match";
 
-// Fetch all matches
 export const useMatches = ({ search, filterType, date }: UseMatchesParams): UseQueryResult<Match[], ApiError> => {
   return useQuery<Match[], ApiError>({
     queryKey: ["matches", search, filterType, date],
@@ -12,7 +11,6 @@ export const useMatches = ({ search, filterType, date }: UseMatchesParams): UseQ
   });
 };
 
-// Reserve a match
 export const useReserveMatch = (): UseMutationResult<
   ReservationResponse,
   ApiError,
@@ -30,7 +28,6 @@ export const useReserveMatch = (): UseMutationResult<
   });
 };
 
-// Cancel a reservation
 export const useCancelReservation = (): UseMutationResult<ReservationResponse, ApiError, { matchId: string }> => {
   const queryClient = useQueryClient();
 
