@@ -62,7 +62,7 @@ export default function DatePicker({
     <View style={styles.container}>
       <View style={styles.inputRow}>
         <TouchableOpacity
-          style={styles.inputWrapper}
+          style={[styles.inputWrapper, styles.input]}
           onPress={openPicker}
           activeOpacity={opacities.active}
         >

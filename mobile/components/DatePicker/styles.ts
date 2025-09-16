@@ -13,6 +13,14 @@ export default StyleSheet.create({
     marginVertical: spacing.md,
     width: '100%',
   },
+  input: {
+    borderWidth: borders.width,
+    borderColor: colors.borderDark,
+    borderRadius: borderRadius.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.white,
+  },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -65,7 +73,7 @@ export default StyleSheet.create({
     marginLeft: spacing.sm,
   },
   modalPrimaryButtonText: {
-    color: colors.white,
+    color: colors.white, // Updated to use the correct key
     fontSize: fontSizes.md,
   },
 })
