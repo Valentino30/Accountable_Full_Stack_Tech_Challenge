@@ -7,7 +7,7 @@ const LogoutIconButton = () => {
   const { logout } = useAuth();
 
   return (
-    <TouchableOpacity onPress={logout} style={styles.button}>
+    <TouchableOpacity onPress={logout} style={styles.button} testID="logout-button">
       <Ionicons name="log-out-outline" size={24} color="#e53935" />
     </TouchableOpacity>
   );
