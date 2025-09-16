@@ -5,7 +5,7 @@ type FontWeight = TextStyle['fontWeight']
 export const colors = {
   primary: '#4682B4',
   secondary: '#FFC107',
-  background: '#f5f5f5',
+  background: '#EBF0F6',
   textPrimary: '#333333',
   textSecondary: '#666666',
   textPlaceholder: '#555',

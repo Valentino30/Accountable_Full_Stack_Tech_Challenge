@@ -2,6 +2,7 @@ import { Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { RootStackParamList } from '../../navigation/AppNavigator'
+import { opacities } from '../../styles/theme'
 import { Match } from '../../types/match'
 import { generateTeamLogo } from '../../utils/generateTeamLogo'
 import Button from '../Button'
@@ -44,10 +45,10 @@ const MatchCard = ({
   return (
     <TouchableOpacity
       style={styles.card}
-      activeOpacity={clickable ? 0.7 : 1}
+      activeOpacity={opacities.active}
       onPress={clickable ? handlePress : undefined}
     >
-      {/* Teams Row */}
+      {/* Teams Row - Left-aligned */}
       <View style={styles.teamsContainer}>
         <View style={styles.teamContainer}>
           {renderLogo(homeLogo.initials, homeLogo.color)}
@@ -64,16 +65,27 @@ const MatchCard = ({
         </View>
       </View>
 
-      {/* Match Details */}
-      <Text style={styles.details}>
-        {match.country} • {new Date(match.date).toLocaleDateString()}
-      </Text>
+      {/* Details - Central */}
+      <View style={styles.detailsContainer}>
+        <Text style={styles.details}>
+          {match.country.toUpperCase()} •{' '}
+          {new Date(match.date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </Text>
+      </View>
 
+      {/* Spots and Reserve Button - Vertical Stack */}
       <Text style={styles.spots}>{match.availableSeats} spots available</Text>
 
-      {/* Reserve Button using Button */}
       {clickable && showReserveButton && (
-        <Button title="Reserve" onPress={onPress ?? handlePress} />
+        <Button
+          title="Reserve"
+          onPress={onPress ?? handlePress}
+          containerStyle={styles.buttonFullWidth} // Added this style
+        />
       )}
     </TouchableOpacity>
   )

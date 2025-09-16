@@ -13,20 +13,19 @@ export default StyleSheet.create({
   card: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xxl,
-    marginBottom: spacing.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
     ...shadow.md,
   },
   teamsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
     marginBottom: spacing.md,
-    padding: spacing.md,
   },
   teamContainer: {
     alignItems: 'center',
+    width: '33%',
   },
   logo: {
     width: sizes.logoSize,
@@ -35,6 +34,8 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.borderDark,
   },
   logoText: {
     color: colors.white,
@@ -50,26 +51,36 @@ export default StyleSheet.create({
     width: sizes.versusWidth,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: spacing.xs,
   },
   vs: {
     fontSize: fontSizes.md,
     fontWeight: fontWeights.bold,
     color: colors.textPlaceholder,
   },
+  detailsContainer: {
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: spacing.md,
+    marginBottom: spacing.md,
+    alignItems: 'center',
+  },
   details: {
     fontSize: fontSizes.sm,
-    color: colors.textPlaceholder,
+    color: colors.textSecondary, // Changed color for better visibility
     textAlign: 'center',
-    marginBottom: spacing.xs,
   },
   spots: {
-    fontSize: fontSizes.sm,
+    fontSize: fontSizes.md, // Increased font size
     color: colors.success,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
     fontWeight: fontWeights.semiBold,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
   },
   spotsFull: {
     color: colors.error,
+  },
+  buttonFullWidth: {
+    width: '100%',
   },
 })
