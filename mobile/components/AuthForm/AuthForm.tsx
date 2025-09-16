@@ -69,7 +69,11 @@ export default function AuthForm({ title, loadingTitle, onSubmit, isPending, err
           onChangeText={setPassword}
           onFocus={handleFocus}
         />
-        <TouchableOpacity style={styles.iconButton} onPress={() => setShowPassword((prev) => !prev)}>
+        <TouchableOpacity
+          testID="password-toggle"
+          style={styles.iconButton}
+          onPress={() => setShowPassword((prev) => !prev)}
+        >
           <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color="#1a73e8" />
         </TouchableOpacity>
       </View>
