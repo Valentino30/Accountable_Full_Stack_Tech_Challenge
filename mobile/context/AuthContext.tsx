@@ -2,7 +2,6 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginUser, registerUser } from "../api/auth";
-import { fetchCurrentUser } from "../api/user";
 import type { AuthContextType } from "../types/auth";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,17 +27,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       queryClient.setQueryData(["refresh-token"], storedRefresh);
       queryClient.setQueryData(["user-id"], storedUserId);
 
-      if (storedAccess && !storedUserId) {
-        try {
-          const { userId: fetchedId } = await fetchCurrentUser();
-          setUserId(fetchedId);
-          await AsyncStorage.setItem("user-id", fetchedId);
-          queryClient.setQueryData(["user-id"], fetchedId);
-        } catch (err) {
-          console.error("Failed to fetch userId during hydration:", err);
-        }
-      }
-
       setHydrated(true);
     };
     hydrateAuth();
@@ -53,11 +41,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     queryClient.setQueryData(["access-token"], tokens.accessToken);
     queryClient.setQueryData(["refresh-token"], tokens.refreshToken);
-
-    const { userId: newUserId } = await fetchCurrentUser();
-    setUserId(newUserId);
-    await AsyncStorage.setItem("user-id", newUserId);
-    queryClient.setQueryData(["user-id"], newUserId);
   };
 
   const loginMutation = useMutation({
