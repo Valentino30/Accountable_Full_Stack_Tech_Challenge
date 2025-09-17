@@ -1,11 +1,11 @@
 import { Response } from 'express'
-import { AuthRequest } from '../middleware/auth'
 import * as userService from '../services/user.service'
+import { IAuthRequest } from '../types/auth.types'
 import { handleError } from '../utils/errors'
 import { AuthenticationError } from '../utils/errors/auth'
 import { UserNotFoundError } from '../utils/errors/user'
 
-export const getCurrentUser = async (req: AuthRequest, res: Response) => {
+export const getCurrentUser = async (req: IAuthRequest, res: Response) => {
   try {
     const { userId } = req
 

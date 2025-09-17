@@ -1,7 +1,18 @@
 import { Types } from 'mongoose'
 import Event from '../models/Event'
-import { GetEventsParams, ReserveEventParams } from '../types/event.types'
+import {
+  IEvent,
+  IGetEventsParams,
+  IReserveEventParams,
+} from '../types/event.types'
 import { ApiError } from '../utils/errors/base'
+import {
+  validateAvailableSeats,
+  validateEventExists,
+  validateEventReservationLimit,
+  validateSpotsReserved,
+  validateTotalReservationLimit,
+} from '../utils/validation/event'
 
 export const getFilteredEvents = async ({
   country,
@@ -9,7 +20,7 @@ export const getFilteredEvents = async ({
   team,
   page,
   limit,
-}: GetEventsParams) => {
+}: IGetEventsParams) => {
   const filter: Record<string, any> = {}
 
   const trimmedTeam = typeof team === 'string' ? team.trim() : team
@@ -44,52 +55,33 @@ export const reserveEvent = async ({
   eventId,
   userId,
   spotsReserved,
-}: ReserveEventParams) => {
-  // Validate request for number of reservations requested (should be 1 or 2)
-  if (!spotsReserved || spotsReserved < 1 || spotsReserved > 2)
-    throw new ApiError('Invalid number of reservations', 400)
-
+}: IReserveEventParams) => {
+  // Validate inputs using provided validators
+  validateSpotsReserved(spotsReserved)
   const event = await Event.findById(eventId)
-  if (!event) throw new ApiError('Event not found', 404)
+  validateEventExists(event)
+  validateEventReservationLimit(event as IEvent, userId, spotsReserved)
+  validateAvailableSeats(event as IEvent, spotsReserved)
+  await validateTotalReservationLimit(userId, spotsReserved)
 
+  // Update reservations
   const userIdObj = new Types.ObjectId(userId)
-  const previousReservations = event.reservations.find((r) =>
+  const previousReservations = (event as IEvent).reservations.find((r) =>
     r.userId.equals(userIdObj)
   )
-
-  // Validate request for total number of reservations requested per event (should not exceed 2)
-  if ((previousReservations?.spotsReserved || 0) + spotsReserved > 2)
-    throw new ApiError('Cannot reserve more than 2 spots for this event', 400)
-
-  // Validate request for number of available seats left for the event
-  if (event.availableSeats < spotsReserved)
-    throw new ApiError('Not enough available seats', 400)
-
-  const totalReserved = await Event.aggregate([
-    { $unwind: '$reservations' },
-    { $match: { 'reservations.userId': userIdObj } },
-    { $group: { _id: null, total: { $sum: '$reservations.spotsReserved' } } },
-  ]).then((result) => result[0]?.total || 0)
-
-  // Validate total reservations across all events (should not exceed 5)
-  if (totalReserved + spotsReserved > 5)
-    throw new ApiError(
-      'Cannot reserve more than 5 spots across all events',
-      400
-    )
 
   if (previousReservations) {
     previousReservations.spotsReserved += spotsReserved
   } else {
-    event.reservations.push({ userId: userIdObj, spotsReserved })
+    ;(event as IEvent).reservations.push({ userId: userIdObj, spotsReserved })
   }
 
-  event.availableSeats -= spotsReserved
-  await event.save()
+  ;(event as IEvent).availableSeats -= spotsReserved
+  await event!.save()
 
   return {
     reservedSpots: previousReservations?.spotsReserved || spotsReserved,
-    remainingSeats: event.availableSeats,
+    remainingSeats: (event as IEvent).availableSeats,
   }
 }
 

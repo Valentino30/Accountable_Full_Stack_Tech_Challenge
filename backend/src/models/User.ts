@@ -1,10 +1,5 @@
-import { Document, Schema, model } from 'mongoose'
-
-export interface IUser extends Document {
-  email: string
-  password: string
-  _id: Schema.Types.ObjectId
-}
+import { Schema, model } from 'mongoose'
+import { IUser } from '../types/user.types'
 
 const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },

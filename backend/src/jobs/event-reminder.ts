@@ -1,6 +1,7 @@
 import { addDays, endOfDay, startOfDay } from 'date-fns'
-import Event, { IReservation } from '../models/Event'
-import { IUser } from '../models/User'
+import Event from '../models/Event'
+import { IReservation } from '../types/event.types'
+import { IUser } from '../types/user.types'
 import { sendEmail } from '../utils/email'
 
 export const sendEventReminders = async (): Promise<void> => {

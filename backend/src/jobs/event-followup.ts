@@ -1,8 +1,9 @@
 import { addDays, endOfDay, startOfDay } from 'date-fns'
-import Event, { IReservation } from '../models/Event'
-import { IUser } from '../models/User'
+import Event from '../models/Event'
+import { IReservation } from '../types/event.types'
 import { sendEmail } from '../utils/email'
 
+import { IUser } from '../types/user.types'
 export const sendEventFollowUps = async (): Promise<void> => {
   const now = new Date()
   const yesterday = addDays(now, -1)

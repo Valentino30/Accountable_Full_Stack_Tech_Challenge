@@ -1,10 +1,10 @@
 import { Response } from 'express'
 import { Types } from 'mongoose'
-import { AuthRequest } from '../middleware/auth'
 import * as eventService from '../services/event.service'
+import { IAuthRequest } from '../types/auth.types'
 import { handleError } from '../utils/errors'
 
-export const getEvents = async (req: AuthRequest, res: Response) => {
+export const getEvents = async (req: IAuthRequest, res: Response) => {
   try {
     const { country, date, team, page = 1, limit = 20 } = req.query
     const events = await eventService.getFilteredEvents({
@@ -20,7 +20,7 @@ export const getEvents = async (req: AuthRequest, res: Response) => {
   }
 }
 
-export const getEventById = async (req: AuthRequest, res: Response) => {
+export const getEventById = async (req: IAuthRequest, res: Response) => {
   try {
     const { id } = req.params
 
@@ -39,7 +39,7 @@ export const getEventById = async (req: AuthRequest, res: Response) => {
   }
 }
 
-export const reserveEvent = async (req: AuthRequest, res: Response) => {
+export const reserveEvent = async (req: IAuthRequest, res: Response) => {
   try {
     const { spotsReserved } = req.body
     const eventId = req.params.id
@@ -61,7 +61,7 @@ export const reserveEvent = async (req: AuthRequest, res: Response) => {
   }
 }
 
-export const cancelReservation = async (req: AuthRequest, res: Response) => {
+export const cancelReservation = async (req: IAuthRequest, res: Response) => {
   try {
     const eventId = req.params.id
     const userId = req.userId!

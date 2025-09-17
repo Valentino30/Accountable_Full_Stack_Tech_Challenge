@@ -1,21 +1,5 @@
-import { Document, Schema, Types, model } from 'mongoose'
-
-export interface IReservation {
-  userId: Types.ObjectId
-  spotsReserved: number
-}
-
-export interface IEvent extends Document {
-  id_odsp: string
-  date: Date
-  country: string
-  homeTeam: string
-  awayTeam: string
-  league: string
-  price: number
-  availableSeats: number
-  reservations: IReservation[]
-}
+import { Schema, model } from 'mongoose'
+import { IEvent, IReservation } from '../types/event.types'
 
 export const ReservationSchema = new Schema<IReservation>(
   {

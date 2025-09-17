@@ -1,13 +1,10 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { ENV } from '../config/env'
-
-export interface AuthRequest extends Request {
-  userId?: string
-}
+import { IAuthRequest } from '../types/auth.types'
 
 export const authenticate = (
-  req: AuthRequest,
+  req: IAuthRequest,
   res: Response,
   next: NextFunction
 ) => {
