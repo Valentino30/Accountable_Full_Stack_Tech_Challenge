@@ -3,14 +3,14 @@ import {
   loginUser,
   refreshToken,
   registerUser,
-} from '../../src/controllers/authController'
+} from '../../src/controllers/auth.controller'
 import {
   cancelReservation,
   getEventById,
   getEvents,
   reserveEvent,
-} from '../../src/controllers/eventController'
-import { getCurrentUser } from '../../src/controllers/userController'
+} from '../../src/controllers/event.controller'
+import { getCurrentUser } from '../../src/controllers/user.controller'
 
 export function createTestApp() {
   const app = express()

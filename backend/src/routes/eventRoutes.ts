@@ -4,7 +4,7 @@ import {
   getEventById,
   getEvents,
   reserveEvent,
-} from '../controllers/eventController'
+} from '../controllers/event.controller'
 
 const router = Router()
 
