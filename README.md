@@ -1,18 +1,12 @@
 # Football Events Manager
 
-The **Football Events Manager** backend provides APIs for managing football match events and ticket reservations.  
-It handles event listings, user reservations (with limits per user/event), and integrates with MongoDB for persistence.
+The Football Events Manager is a backend service designed to manage football match events and ticket reservations. It provides APIs for user registration and login, event creation and listing, as well as ticket reservations and cancellations. The system enforces per-user and per-event reservation limits, ensuring fair access while maintaining persistent data storage through MongoDB.
 
-This service is built with **Node.js**, **TypeScript**, **Express**, and **MongoDB**.
+The platform is built using **Node.js**, **TypeScript**, and **Express** on the backend, with **MongoDB** handling persistence. A **React Native** application built with **Expo** serves as the mobile client, enabling users to interact seamlessly with the system for browsing events, managing reservations, and handling cancellations in real time.
 
 ---
 
 ## 🚀 Getting Started
-
-#### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18 or later recommended)
-- [Docker](https://www.docker.com/) (to run MongoDB)
 
 #### Clone the repository
 
@@ -20,6 +14,8 @@ This service is built with **Node.js**, **TypeScript**, **Express**, and **Mongo
 git clone https://github.com/your-username/football_events_manager.git
 cd football_events_manager
 ```
+
+### Backend
 
 #### Install dependencies
 
@@ -30,15 +26,19 @@ npm install
 
 #### Setup environment variables
 
-Copy the example file and adjust values if needed:
+Copy the example file:
 
 ```bash
-cp backend/.env.example backend/.env
+touch .env
+cp .env.example .env
 ```
+
+Then replace the dummy variables with your own secrets and credentials.
 
 #### Run MongoDB using Docker
 
-Start a MongoDB container:
+1. Install & Open Docker Desktop
+2. Start a MongoDB container:
 
 ```bash
 docker run -d -p 27017:27017 --name mongo mongo:6
@@ -49,7 +49,6 @@ docker run -d -p 27017:27017 --name mongo mongo:6
 Import initial event data from the CSV file:
 
 ```bash
-cd backend
 npm run seed
 ```
 
@@ -58,7 +57,6 @@ npm run seed
 Start the development server:
 
 ```bash
-cd backend
 npm run dev
 ```
 
@@ -70,11 +68,69 @@ Server will be running on:
 
 ---
 
+### Frontend
+
+#### Install dependencies
+
+```bash
+cd mobile
+npm install
+```
+
+#### Setup environment variables
+
+Copy the example file:
+
+```bash
+touch .env.local
+cp .env.example .env.local
+```
+
+#### Run Expo
+
+Start Expo's development server:
+
+```bash
+npm run start
+```
+
+#### Running the app
+
+Once the Expo dev server is running, you have a few options:
+
+- **Physical Device**: Install the Expo Go app on your Android or iOS device. Scan the QR code shown in your terminal (or in the Expo Dev Tools browser window) to open the project directly.
+
+- **Mobile Emulator**: Press i in the terminal to launch the iOS Simulator (macOS only, requires Xcode).Press a in the terminal to launch the Android emulator (requires Android Studio set up).
+
+---
+
+## 🧪 Testing
+
+### Backend
+
+```bash
+cd backend
+npm run test:watch
+```
+
+### Frontend
+
+```bash
+cd mobile
+npm run test:watch
+```
+
+---
+
 ## 📚 API Endpoints
 
-- GET /api/events → List all events
-- GET /api/events/:id → Get single event
-- POST /api/events/:id/reserve → Reserve spots for an event
+- **POST** /api/auth/login → Login
+- **POST** /api/auth/register → Register
+- **GET** /api/users/me → Get Current User
+- **GET** /api/events → List all Events
+- **GET** /api/events/:id → Get one Event
+- **POST** /api/events/:id/reserve → Make a Reservation
+- **DELETE** /api/events/:id/reserve → Cancel a Reservation
 
 ---
 
@@ -103,4 +159,3 @@ When the cron jobs run, you should see logs like this in your console:
 📨 Running follow-up job...
 ✅ Email sent successfully
 ```
----
