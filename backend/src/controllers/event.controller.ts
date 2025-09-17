@@ -2,6 +2,7 @@ import { Response } from 'express'
 import { Types } from 'mongoose'
 import { AuthRequest } from '../middleware/auth'
 import * as eventService from '../services/event.service'
+import { handleError } from '../utils/errors'
 
 export const getEvents = async (req: AuthRequest, res: Response) => {
   try {
@@ -14,8 +15,8 @@ export const getEvents = async (req: AuthRequest, res: Response) => {
       limit: parseInt(limit as string),
     })
     return res.json(events)
-  } catch (err) {
-    return res.status(500).json({ error: 'Server error' })
+  } catch (err: any) {
+    handleError(err, res)
   }
 }
 
@@ -33,8 +34,8 @@ export const getEventById = async (req: AuthRequest, res: Response) => {
     }
 
     return res.json(event)
-  } catch (err) {
-    return res.status(500).json({ error: 'Server error' })
+  } catch (err: any) {
+    handleError(err, res)
   }
 }
 
@@ -56,7 +57,7 @@ export const reserveEvent = async (req: AuthRequest, res: Response) => {
       remainingSeats: result.remainingSeats,
     })
   } catch (err: any) {
-    res.status(err.status || 500).json({ error: err.message || 'Server error' })
+    handleError(err, res)
   }
 }
 
@@ -73,6 +74,6 @@ export const cancelReservation = async (req: AuthRequest, res: Response) => {
       availableSeats: result.availableSeats,
     })
   } catch (err: any) {
-    res.status(err.status || 500).json({ error: err.message || 'Server error' })
+    handleError(err, res)
   }
 }

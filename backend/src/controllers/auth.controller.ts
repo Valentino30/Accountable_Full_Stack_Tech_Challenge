@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import * as authService from '../services/auth.service'
+import { handleError } from '../utils/errors'
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -11,16 +12,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const tokens = await authService.registerUser(email, password)
     res.status(201).json(tokens)
   } catch (err: any) {
-    if (err.name === 'ValidationError') {
-      return res
-        .status(400)
-        .json({ error: err.message, feedback: err.feedback })
-    }
-    if (err.code === 11000) {
-      return res.status(400).json({ error: 'Email is already registered' })
-    }
-    console.error('registerUser error:', err)
-    res.status(500).json({ error: 'Server error' })
+    handleError(err, res)
   }
 }
 
@@ -30,11 +22,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const tokens = await authService.loginUser(email, password)
     res.json(tokens)
   } catch (err: any) {
-    if (err.name === 'AuthenticationError') {
-      return res.status(401).json({ error: err.message })
-    }
-    console.error('loginUser error:', err)
-    res.status(500).json({ error: 'Server error' })
+    handleError(err, res)
   }
 }
 
@@ -48,10 +36,6 @@ export const refreshToken = async (req: Request, res: Response) => {
     const accessToken = await authService.refreshToken(token)
     res.json({ accessToken })
   } catch (err: any) {
-    if (err.name === 'TokenError' || err.name === 'UserNotFoundError') {
-      return res.status(401).json({ error: err.message })
-    }
-    console.error('refreshToken error:', err)
-    res.status(500).json({ error: 'Server error' })
+    handleError(err, res)
   }
 }
