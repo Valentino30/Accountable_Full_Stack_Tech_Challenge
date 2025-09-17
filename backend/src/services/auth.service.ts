@@ -1,24 +1,15 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import zxcvbn from 'zxcvbn'
 import { ENV } from '../config/env'
 import User from '../models/User'
 import { AuthenticationError, TokenError } from '../utils/errors/auth'
 import { UserNotFoundError } from '../utils/errors/user'
-import { ValidationError } from '../utils/errors/validation'
 import { generateAccessTokenOnly, generateTokens } from '../utils/token'
 
 export const registerUser = async (email: string, password: string) => {
-  // Check password strength
-  const strength = zxcvbn(password)
-  if (strength.score < 3) {
-    throw new ValidationError('Password is too weak', strength.feedback)
-  }
-
   // Hash password
   const hashed = await bcrypt.hash(password, 10)
   const user = await User.create({ email, password: hashed })
-
   // Generate and return tokens
   return generateTokens(user._id.toString())
 }

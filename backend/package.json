@@ -32,8 +32,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.1",
     "node-cron": "^4.2.1",
-    "nodemailer": "^7.0.6",
-    "zxcvbn": "^4.4.2"
+    "nodemailer": "^7.0.6"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
