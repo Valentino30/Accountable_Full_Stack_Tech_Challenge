@@ -3,12 +3,9 @@ import jwt from 'jsonwebtoken'
 import zxcvbn from 'zxcvbn'
 import { ENV } from '../config/env'
 import User from '../models/User'
-import {
-  AuthenticationError,
-  TokenError,
-  UserNotFoundError,
-  ValidationError,
-} from '../utils/auth-errors'
+import { AuthenticationError, TokenError } from '../utils/errors/auth'
+import { UserNotFoundError } from '../utils/errors/user'
+import { ValidationError } from '../utils/errors/validation'
 import { generateAccessTokenOnly, generateTokens } from '../utils/token-utils'
 
 export const registerUser = async (email: string, password: string) => {

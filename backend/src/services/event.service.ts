@@ -1,7 +1,7 @@
 import { Types } from 'mongoose'
 import Event from '../models/Event'
 import { GetEventsParams, ReserveEventParams } from '../types/event.types'
-import { ApiError } from '../utils/errors'
+import { ApiError } from '../utils/errors/base'
 
 export const getFilteredEvents = async ({
   country,
