@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FlatList, Text, View } from 'react-native'
+import { ActivityIndicator, FlatList, Text, View } from 'react-native'
 import MatchCard from '../../components/MatchCard'
 import SearchBarWithFilter from '../../components/SearchBarWithFilter'
 import { useMatches } from '../../hooks/useMatches'
@@ -12,14 +12,20 @@ const MatchListScreen = () => {
   const [date, setDate] = useState<Date | null>(null)
 
   const {
-    data: matches = [],
-    refetch,
+    data,
+    fetchNextPage,
+    hasNextPage,
     isFetching,
+    isFetchingNextPage,
+    refetch,
+    isRefetching,
   } = useMatches({
     search,
     filterType,
     date,
   })
+
+  const allMatches = data?.pages.flatMap((page) => page) ?? []
 
   const EmptyState = () => (
     <View style={styles.emptyContainer}>
@@ -45,16 +51,25 @@ const MatchListScreen = () => {
       />
 
       <FlatList
-        data={matches}
+        data={allMatches}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => <MatchCard match={item} />}
-        refreshing={isFetching}
         onRefresh={refetch}
+        refreshing={isRefetching && !isFetchingNextPage}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage()
+          }
+        }}
+        onEndReachedThreshold={0.5}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={
-          matches.length === 0 ? styles.emptyContainer : styles.listContent
+          allMatches.length === 0 ? styles.emptyContainer : styles.listContent
         }
-        ListEmptyComponent={isFetching ? null : <EmptyState />}
+        ListEmptyComponent={isFetching && !isRefetching ? null : <EmptyState />}
+        ListFooterComponent={
+          isFetchingNextPage ? <ActivityIndicator size="large" /> : null
+        }
       />
     </View>
   )
