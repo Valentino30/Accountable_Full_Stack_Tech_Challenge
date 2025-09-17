@@ -3,7 +3,7 @@ import { fireEvent, render } from '@testing-library/react-native'
 import { Match } from '../../types/match'
 import MatchCard from './MatchCard'
 
-// ✅ Mock useNavigation from react-navigation
+// Mock useNavigation from react-navigation
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: jest.fn(),
@@ -32,7 +32,7 @@ describe('MatchCard Component', () => {
     const { getByText } = render(<MatchCard match={mockMatch} />)
     expect(getByText('FC Rickton')).toBeTruthy()
     expect(getByText('Morty United')).toBeTruthy()
-    expect(getByText('USA • 9/20/2025')).toBeTruthy()
+    expect(getByText(/September 20, 2025/)).toBeTruthy()
     expect(getByText('50 spots available')).toBeTruthy()
   })
 
