@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer'
 
 const transporter = nodemailer.createTransport({
   host: process.env.SENDGRID_HOST,
@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SENDGRID_API_KEY,
   },
   secure: false,
-});
+})
 
 export const sendEmail = async (to: string, subject: string, text: string) => {
   try {
@@ -17,9 +17,9 @@ export const sendEmail = async (to: string, subject: string, text: string) => {
       to,
       subject,
       text,
-    });
-    console.log("✅ Email sent successfully");
+    })
+    console.log('✅ Email sent successfully')
   } catch (err) {
-    console.error("Failed to send confirmation email:", err);
+    console.error('Failed to send confirmation email:', err)
   }
-};
+}
