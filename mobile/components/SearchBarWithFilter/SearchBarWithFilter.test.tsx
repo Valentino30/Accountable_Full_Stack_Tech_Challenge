@@ -1,4 +1,3 @@
-import React from 'react'
 import { fireEvent, render } from '@testing-library/react-native'
 import { MatchFilterType } from '../../types/match'
 import SearchBarWithFilter from './SearchBarWithFilter'
