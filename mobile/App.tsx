@@ -1,5 +1,5 @@
-import React from 'react'
 import { QueryClientProvider } from '@tanstack/react-query'
+import './api/apiClientInterceptors'
 import { AuthProvider } from './context/AuthContext'
 import { UserProvider } from './context/UserContext'
 import AppNavigator from './navigation/AppNavigator'

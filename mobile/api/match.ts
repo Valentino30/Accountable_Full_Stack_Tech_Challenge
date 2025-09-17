@@ -1,6 +1,6 @@
 import { Match, UseMatchesParams } from '../types/match'
 import { ReservationResponse } from '../types/reservation'
-import apiClient from './apiClient'
+import { apiClient } from './apiClient'
 
 // Get matches with optional filters - paginated
 export const getMatches = async ({
