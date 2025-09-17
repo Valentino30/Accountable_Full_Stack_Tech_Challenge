@@ -1,5 +1,5 @@
-import Event from '../../src/models/Event'
-import User from '../../src/models/User'
+import Event from '../models/Event'
+import User from '../models/User'
 
 function createUniqueId() {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`

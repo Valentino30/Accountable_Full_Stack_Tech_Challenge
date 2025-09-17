@@ -2,7 +2,7 @@ import express from 'express'
 import request from 'supertest'
 import Event from '../src/models/Event'
 import User from '../src/models/User'
-import { createTestEvent, createTestUser } from '../src/utils/factories'
+import { createTestEvent, createTestUser } from '../src/utils/factory'
 import { setupTestDB, teardownTestDB } from './utils/mongoTestUtils'
 import { createTestApp } from './utils/testApp'
 

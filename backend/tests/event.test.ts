@@ -1,7 +1,7 @@
 import express from 'express'
 import request from 'supertest'
 import Event from '../src/models/Event'
-import { createTestEvent } from '../src/utils/factories'
+import { createTestEvent } from '../src/utils/factory'
 import { setupTestDB, teardownTestDB } from './utils/mongoTestUtils'
 import { createTestApp } from './utils/testApp'
 

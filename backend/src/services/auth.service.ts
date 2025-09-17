@@ -6,7 +6,7 @@ import User from '../models/User'
 import { AuthenticationError, TokenError } from '../utils/errors/auth'
 import { UserNotFoundError } from '../utils/errors/user'
 import { ValidationError } from '../utils/errors/validation'
-import { generateAccessTokenOnly, generateTokens } from '../utils/token-utils'
+import { generateAccessTokenOnly, generateTokens } from '../utils/token'
 
 export const registerUser = async (email: string, password: string) => {
   // Check password strength

@@ -1,4 +1,4 @@
-import * as emailService from '../../src/utils/emailService'
+import * as emailService from '../../src/utils/email'
 
 jest.mock('../../src/utils/emailService')
 
