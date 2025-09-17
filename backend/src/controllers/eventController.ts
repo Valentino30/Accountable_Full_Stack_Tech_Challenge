@@ -3,14 +3,28 @@ import { Types } from 'mongoose'
 import { AuthRequest } from '../middleware/auth'
 import Event from '../models/Event'
 
-// Get all events with optional filters
+// Get events with optional filters - paginated
 export const getEvents = async (req: AuthRequest, res: Response) => {
   try {
-    const { country, date, team } = req.query
+    const { country, date, team, page = 1, limit = 20 } = req.query
     const filter: Record<string, any> = {}
 
-    if (country) {
-      filter.country = { $regex: country as string, $options: 'i' }
+    // Trim whitespace for cleaner searches.
+    // This ensures that searches like "FC Cologne " or " FC Cologne" are handled correctly.
+    const trimmedTeam = typeof team === 'string' ? team.trim() : team
+    if (trimmedTeam) {
+      filter.$or = [
+        { homeTeam: { $regex: trimmedTeam, $options: 'i' } },
+        { awayTeam: { $regex: trimmedTeam, $options: 'i' } },
+      ]
+    }
+
+    // Trim whitespace for cleaner searches.
+    // This ensures that searches like "Germany " or " Germany" are handled correctly.
+    const trimmedCountry =
+      typeof country === 'string' ? country.trim() : country
+    if (trimmedCountry) {
+      filter.country = { $regex: trimmedCountry, $options: 'i' }
     }
 
     if (date) {
@@ -20,14 +34,12 @@ export const getEvents = async (req: AuthRequest, res: Response) => {
       filter.date = { $gte: start, $lt: end }
     }
 
-    if (team) {
-      filter.$or = [
-        { homeTeam: { $regex: team as string, $options: 'i' } },
-        { awayTeam: { $regex: team as string, $options: 'i' } },
-      ]
-    }
+    // Implement pagination using .skip() and .limit() to only return a chunk of data.
+    const pageNumber = parseInt(page as string)
+    const limitNumber = parseInt(limit as string)
+    const skip = (pageNumber - 1) * limitNumber
+    const events = await Event.find(filter).skip(skip).limit(limitNumber).lean()
 
-    const events = await Event.find(filter).lean()
     return res.json(events)
   } catch (err) {
     console.error('GetEvents Error:', err)
