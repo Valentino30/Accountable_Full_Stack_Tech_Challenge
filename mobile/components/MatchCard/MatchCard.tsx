@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -84,11 +85,13 @@ const MatchCard = ({
         <Button
           title="Reserve"
           onPress={onPress ?? handlePress}
-          containerStyle={styles.buttonFullWidth} // Added this style
+          containerStyle={styles.buttonFullWidth}
         />
       )}
     </TouchableOpacity>
   )
 }
 
-export default MatchCard
+// Wraps the component in React.memo to prevent it from re-rendering
+// unless its props change, which optimizes the performance of FlatList.
+export default memo(MatchCard)
