@@ -1,7 +1,7 @@
 import express from 'express'
 import request from 'supertest'
+import User from '../src/models/User'
 import {
-  dropTestDB,
   seedTestUser,
   setupTestDB,
   teardownTestDB,
@@ -18,8 +18,11 @@ beforeAll(async () => {
 
 afterAll(teardownTestDB)
 
+afterEach(async () => {
+  await User.deleteMany({})
+})
+
 beforeEach(async () => {
-  await dropTestDB()
   seededUser = await seedTestUser()
 })
 
@@ -40,7 +43,8 @@ describe('Users API - GET /api/users/me', () => {
   })
 
   it('returns 404 if user does not exist', async () => {
-    const fakeUserId = '507f1f77bcf86cd799439011' // valid ObjectId, not in DB
+    await User.deleteMany({})
+    const fakeUserId = '507f1f77bcf86cd799439011'
     const res = await request(app)
       .get('/api/users/me')
       .set('x-test-user-id', fakeUserId)

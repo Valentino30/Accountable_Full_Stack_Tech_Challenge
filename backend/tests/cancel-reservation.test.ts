@@ -1,10 +1,14 @@
 import express from 'express'
 import request from 'supertest'
+import Event from '../src/models/Event'
+import User from '../src/models/User'
 import { createTestEvent, createTestUser } from '../src/utils/factories'
-import { dropTestDB, setupTestDB, teardownTestDB } from './utils/mongoTestUtils'
+import { setupTestDB, teardownTestDB } from './utils/mongoTestUtils'
 import { createTestApp } from './utils/testApp'
 
 let app: express.Express
+let user: any
+let ev: any
 
 beforeAll(async () => {
   await setupTestDB()
@@ -12,13 +16,19 @@ beforeAll(async () => {
 })
 
 afterAll(teardownTestDB)
-beforeEach(dropTestDB)
+
+beforeEach(async () => {
+  user = await createTestUser()
+  ev = await createTestEvent()
+})
+
+afterEach(async () => {
+  await User.deleteMany({})
+  await Event.deleteMany({})
+})
 
 describe('Reservation cancellation', () => {
   test('User can cancel a reservation', async () => {
-    const user = await createTestUser()
-    const ev = await createTestEvent()
-
     const initialAvailableSeats = ev.availableSeats
 
     // Reserve 2 spots first

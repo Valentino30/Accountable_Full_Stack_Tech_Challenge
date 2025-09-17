@@ -1,7 +1,8 @@
 import express from 'express'
 import request from 'supertest'
+import Event from '../src/models/Event'
 import { createTestEvent } from '../src/utils/factories'
-import { dropTestDB, setupTestDB, teardownTestDB } from './utils/mongoTestUtils'
+import { setupTestDB, teardownTestDB } from './utils/mongoTestUtils'
 import { createTestApp } from './utils/testApp'
 
 let app: express.Express
@@ -12,7 +13,10 @@ beforeAll(async () => {
 })
 
 afterAll(teardownTestDB)
-beforeEach(dropTestDB)
+
+afterEach(async () => {
+  await Event.deleteMany({})
+})
 
 describe('Events API', () => {
   test('GET /api/events/:id returns the event', async () => {

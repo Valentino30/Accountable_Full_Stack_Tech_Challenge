@@ -1,7 +1,9 @@
 import express from 'express'
 import request from 'supertest'
+import Event from '../src/models/Event'
+import User from '../src/models/User'
 import { createTestEvent, createTestUser } from '../src/utils/factories'
-import { dropTestDB, setupTestDB, teardownTestDB } from './utils/mongoTestUtils'
+import { setupTestDB, teardownTestDB } from './utils/mongoTestUtils'
 import { createTestApp } from './utils/testApp'
 
 let app: express.Express
@@ -12,7 +14,11 @@ beforeAll(async () => {
 })
 
 afterAll(teardownTestDB)
-beforeEach(dropTestDB)
+
+afterEach(async () => {
+  await User.deleteMany({})
+  await Event.deleteMany({})
+})
 
 describe('Reservation rules', () => {
   test('Max 2 spots per user per event', async () => {
@@ -30,7 +36,7 @@ describe('Reservation rules', () => {
       .set('x-test-user-id', user._id.toString())
       .send({ spotsReserved: 1 })
 
-    expect([400, 422]).toContain(res.status)
+    expect(res.status).toBe(400)
   })
 
   test('Max 5 spots across all events', async () => {
