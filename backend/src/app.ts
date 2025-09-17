@@ -1,9 +1,9 @@
 import express from 'express'
 import cors from 'cors'
 import { authenticate } from './middleware/auth'
-import authRoutes from './routes/authRoutes'
-import eventRoutes from './routes/eventRoutes'
-import userRoutes from './routes/userRoutes'
+import authRoutes from './routes/auth.routes'
+import eventRoutes from './routes/event.routes'
+import userRoutes from './routes/user.routes'
 
 const app = express()
 app.use(cors())
