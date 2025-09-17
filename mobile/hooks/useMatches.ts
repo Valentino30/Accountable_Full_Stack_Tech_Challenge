@@ -30,15 +30,14 @@ export const useMatches = ({
         date,
         pageParam,
       }),
+    // placeholderData keeps the previous data visible while the new data is being fetched.
+    // This prevents the UI from flickering to an empty state during a search.
+    placeholderData: (previousData) => previousData,
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      // Check if the last page has items.
-      // If not, we've reached the end.
       if (lastPage.length < 20) {
-        // Assuming a limit of 20
         return undefined
       }
-      // Return the next page number
       return allPages.length + 1
     },
   })
