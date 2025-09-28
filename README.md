@@ -86,6 +86,8 @@ touch .env.local
 cp .env.example .env.local
 ```
 
+Then replace `[YOUR_LOCAL_IP_ADDRESS]` with the local IPv4 address of your machine (e.g., `192.168.0.x`).
+
 #### Run Expo
 
 Start Expo's development server:
